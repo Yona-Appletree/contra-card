@@ -13,6 +13,7 @@ use serde::Deserialize;
 
 mod highlight;
 mod print;
+mod wrap;
 
 const BASE_URL: &str = "https://www.ibiblio.org/contradance/thecallersbox";
 const BROWSER_USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) contra-card/0.1";
@@ -54,6 +55,7 @@ struct CardLayout {
     figure_x: f32,
     left_rule_x: f32,
     notes_x: f32,
+    continuation_x: f32,
     body_start: f32,
     row_step: f32,
     phrase_gap: f32,
@@ -61,6 +63,17 @@ struct CardLayout {
     beats_font_size: f32,
     figure_font_size: f32,
     notes_font_size: f32,
+    max_figure_chars: usize,
+    max_note_chars: usize,
+}
+
+#[derive(Debug, Default)]
+struct SvgCardInfo {
+    title: Option<String>,
+    authors: Option<String>,
+    formation: Option<String>,
+    source_id: Option<String>,
+    source_url: Option<String>,
 }
 
 fn main() -> Result<()> {
@@ -82,7 +95,9 @@ fn main() -> Result<()> {
 
 fn interactive_loop() -> Result<()> {
     println!("Contra card maker");
-    println!("Search The Caller's Box by dance name, paste a dance URL, or type q to quit.\n");
+    println!(
+        "Search The Caller's Box by dance name, paste a dance URL/SVG path, or type q to quit.\n"
+    );
 
     loop {
         let input = prompt("Dance name or URL: ")?;
@@ -90,6 +105,12 @@ fn interactive_loop() -> Result<()> {
             return Ok(());
         }
         if input.trim().is_empty() {
+            continue;
+        }
+
+        if let Some(path) = resolve_existing_svg(&input) {
+            handle_existing_card(path)?;
+            println!();
             continue;
         }
 
@@ -103,8 +124,9 @@ fn interactive_loop() -> Result<()> {
 
         if confirm_dance(&dance)? {
             let path = write_svg(&dance)?;
-            println!("Wrote {}", path.display());
-            return Ok(());
+            after_writing_card(path)?;
+            println!();
+            continue;
         }
 
         println!("No worries. Back to search.\n");
@@ -120,7 +142,17 @@ fn add_command(args: &[String]) -> Result<()> {
     let dance = dance_from_input(&input)?;
     if confirm_dance(&dance)? {
         let path = write_svg(&dance)?;
-        println!("Wrote {}", path.display());
+        after_writing_card(path)?;
+    }
+    Ok(())
+}
+
+fn handle_existing_card(path: PathBuf) -> Result<()> {
+    let info = svg_card_info(&path)?;
+    println!("\n{}", existing_card_summary(&path, &info));
+    if confirm_yes_default("Print this card? [Y/n]: ")? {
+        let options = print::PrintOptions::default_for_path(path);
+        print::print_svg(&options)?;
     }
     Ok(())
 }
@@ -150,6 +182,15 @@ fn print_command(args: &[String]) -> Result<()> {
     print::print_svg(&options)
 }
 
+fn after_writing_card(path: PathBuf) -> Result<()> {
+    println!("Wrote {}", path.display());
+    if confirm_yes_default("Print now? [Y/n]: ")? {
+        let options = print::PrintOptions::default_for_path(path);
+        print::print_svg(&options)?;
+    }
+    Ok(())
+}
+
 fn print_help() {
     println!(
         r#"Contra card maker
@@ -163,6 +204,8 @@ Usage:
 
 Notes:
   QUERY can be a dance title, Caller’s Box URL, or raw Caller’s Box ID.
+  The interactive prompt also accepts existing SVG paths or filenames from dances/.
+  Interactive yes/no prompts default to yes, so Enter proceeds.
   Print defaults to your custom paper size named 3x5 and landscape orientation.
   Use `contra-card print <SVG> --dry-run` to inspect the lp command.
   `cargo run --` can be used in front of these commands during development.
@@ -289,9 +332,9 @@ fn confirm_dance(dance: &Dance) -> Result<bool> {
     println!("\n{}", preview_text(dance));
 
     loop {
-        let answer = prompt("Create SVG for this dance? [y/n/b]: ")?;
+        let answer = prompt("Create SVG for this dance? [Y/n/b]: ")?;
         match answer.to_lowercase().as_str() {
-            "y" | "yes" => return Ok(true),
+            "" | "y" | "yes" => return Ok(true),
             "n" | "no" | "b" | "back" => return Ok(false),
             _ => eprintln!("Enter y or b."),
         }
@@ -353,6 +396,10 @@ fn render_svg(dance: &Dance) -> String {
     let source_id = encode_double_quoted_attribute(&dance.id);
     let source_json_url = format!("{source_url}&format=JSON");
     let source_json = encode_double_quoted_attribute(&source_json_url);
+    let metadata_name = encode_double_quoted_attribute(&dance.name);
+    let metadata_authors_text = dance.authors.join(", ");
+    let metadata_authors = encode_double_quoted_attribute(&metadata_authors_text);
+    let metadata_formation = encode_double_quoted_attribute(&meta_text);
     let layout = card_layout(dance);
 
     let mut rows = String::new();
@@ -360,7 +407,7 @@ fn render_svg(dance: &Dance) -> String {
     let mut y = layout.body_start;
     for (phrase_index, phrase) in dance.phrases.iter().enumerate() {
         let phrase_start = y;
-        let phrase_rows = phrase.figures.len().max(1);
+        let phrase_rows = phrase_visual_rows(phrase, &layout);
         let phrase_label_y = phrase_start + ((phrase_rows - 1) as f32 * layout.row_step / 2.0);
         rows.push_str(&format!(
             r#"<text x="{phrase_x:.1}" y="{phrase_label_y:.1}" class="phrase">{}</text>
@@ -371,16 +418,27 @@ fn render_svg(dance: &Dance) -> String {
 
         for figure in &phrase.figures {
             let (beats, text) = split_beats(figure);
-            let figure_spans = render_figure_spans(&neutralize_terms(text));
-            rows.push_str(&format!(
-                r#"<text x="{beats_x:.1}" y="{y:.1}" class="beats">{}</text>
+            let wrapped_lines = wrap::wrap_text(&neutralize_terms(text), layout.max_figure_chars);
+            for (line_index, line) in wrapped_lines.iter().enumerate() {
+                let beat_text = if line_index == 0 {
+                    encode_text(&beats.clone().unwrap_or_default()).to_string()
+                } else {
+                    String::new()
+                };
+                let figure_x = if line.indent {
+                    layout.continuation_x
+                } else {
+                    layout.figure_x
+                };
+                let figure_spans = render_figure_spans(&line.text);
+                rows.push_str(&format!(
+                    r#"<text x="{beats_x:.1}" y="{y:.1}" class="beats">{beat_text}</text>
 <text x="{figure_x:.1}" y="{y:.1}" class="figure" xml:space="preserve">{figure_spans}</text>
 "#,
-                encode_text(&beats.unwrap_or_default()),
-                beats_x = layout.beats_x,
-                figure_x = layout.figure_x,
-            ));
-            y += layout.row_step;
+                    beats_x = layout.beats_x,
+                ));
+                y += layout.row_step;
+            }
         }
         if phrase_index + 1 < dance.phrases.len() {
             let rule_y = y - (layout.phrase_gap / 2.0) - 4.0;
@@ -401,12 +459,21 @@ fn render_svg(dance: &Dance) -> String {
         ));
         y += layout.row_step;
         for note in &dance.calling_notes {
-            notes.push_str(&format!(
-                r#"<text x="{notes_x:.1}" y="{y:.1}" class="notes">{}</text>"#,
-                encode_text(&neutralize_terms(note)),
-                notes_x = layout.notes_x,
-            ));
-            y += layout.row_step;
+            if note.trim().is_empty() {
+                continue;
+            }
+            for line in wrap::wrap_text(&neutralize_terms(note), layout.max_note_chars) {
+                let note_x = if line.indent {
+                    layout.notes_x + 12.0
+                } else {
+                    layout.notes_x
+                };
+                notes.push_str(&format!(
+                    r#"<text x="{note_x:.1}" y="{y:.1}" class="notes">{}</text>"#,
+                    encode_text(&line.text),
+                ));
+                y += layout.row_step;
+            }
         }
     }
 
@@ -418,6 +485,9 @@ fn render_svg(dance: &Dance) -> String {
   <metadata>
     <contra-card xmlns="https://github.com/yona/contra-card"
       version="0.1"
+      dance-name="{metadata_name}"
+      authors="{metadata_authors}"
+      formation="{metadata_formation}"
       source="the-callers-box"
       source-id="{source_id}"
       source-url="{source}"
@@ -488,20 +558,27 @@ fn render_header_meta(text: &str) -> String {
 }
 
 fn card_layout(dance: &Dance) -> CardLayout {
-    let figure_rows: usize = dance
-        .phrases
-        .iter()
-        .map(|phrase| phrase.figures.len().max(1))
-        .sum();
+    let base_figure_font_size = 17.0;
+    let figure_x = 104.0;
+    let right_edge = 484.0;
+    let notes_x = 24.0;
+    let max_figure_chars = max_chars_for_width(right_edge - figure_x, base_figure_font_size);
+    let max_note_chars = max_chars_for_width(right_edge - notes_x, 13.0);
+    let figure_rows = figure_visual_rows(dance, max_figure_chars);
     let phrase_gaps = dance.phrases.len().saturating_sub(1);
     let note_rows = if dance.calling_notes.is_empty() {
         0
     } else {
-        1 + dance.calling_notes.len()
+        1 + dance
+            .calling_notes
+            .iter()
+            .filter(|note| !note.trim().is_empty())
+            .map(|note| wrap::wrap_text(&neutralize_terms(note), max_note_chars).len())
+            .sum::<usize>()
     };
 
     let body_start = 66.0;
-    let body_max_baseline = 276.0;
+    let body_max_baseline = 268.0;
     let default_row_step = 21.0;
     let default_phrase_gap = 10.0;
     let content_rows = figure_rows + note_rows;
@@ -521,17 +598,54 @@ fn card_layout(dance: &Dance) -> CardLayout {
     CardLayout {
         phrase_x: 16.0,
         beats_x: 68.0,
-        figure_x: 104.0,
+        figure_x,
         left_rule_x: 16.0,
-        notes_x: 24.0,
+        notes_x,
+        continuation_x: figure_x + 16.0,
         body_start,
         row_step: default_row_step * scale,
         phrase_gap: default_phrase_gap * scale,
         phrase_font_size: 18.0 * scale,
         beats_font_size: 13.0 * scale,
-        figure_font_size: 17.0 * scale,
+        figure_font_size: base_figure_font_size * scale,
         notes_font_size: 13.0 * scale,
+        max_figure_chars,
+        max_note_chars,
     }
+}
+
+fn figure_visual_rows(dance: &Dance, max_chars: usize) -> usize {
+    dance
+        .phrases
+        .iter()
+        .map(|phrase| {
+            phrase
+                .figures
+                .iter()
+                .map(|figure| {
+                    let (_, text) = split_beats(figure);
+                    wrap::wrap_text(&neutralize_terms(text), max_chars).len()
+                })
+                .sum::<usize>()
+                .max(1)
+        })
+        .sum()
+}
+
+fn phrase_visual_rows(phrase: &Phrase, layout: &CardLayout) -> usize {
+    phrase
+        .figures
+        .iter()
+        .map(|figure| {
+            let (_, text) = split_beats(figure);
+            wrap::wrap_text(&neutralize_terms(text), layout.max_figure_chars).len()
+        })
+        .sum::<usize>()
+        .max(1)
+}
+
+fn max_chars_for_width(width: f32, font_size: f32) -> usize {
+    (width / (font_size * 0.47)).floor().max(16.0) as usize
 }
 
 fn content_height(content_rows: usize, phrase_gaps: usize, row_step: f32, phrase_gap: f32) -> f32 {
@@ -610,13 +724,13 @@ fn slugify(name: &str) -> String {
 }
 
 fn source_id_from_svg(path: &Path) -> Result<String> {
-    let svg =
-        fs::read_to_string(path).with_context(|| format!("could not read {}", path.display()))?;
-    let metadata_id_re = Regex::new(r#"source-id="([^"]+)""#)?;
-    if let Some(caps) = metadata_id_re.captures(&svg) {
-        return Ok(decode_html_entities(&caps[1]).into_owned());
+    let info = svg_card_info(path)?;
+    if let Some(source_id) = info.source_id {
+        return Ok(source_id);
     }
 
+    let svg =
+        fs::read_to_string(path).with_context(|| format!("could not read {}", path.display()))?;
     id_from_input(&svg).with_context(|| {
         format!(
             "could not find Caller’s Box source metadata in {}",
@@ -625,11 +739,88 @@ fn source_id_from_svg(path: &Path) -> Result<String> {
     })
 }
 
+fn resolve_existing_svg(input: &str) -> Option<PathBuf> {
+    let cleaned = input.trim().trim_matches('"').trim_matches('\'');
+    if cleaned.is_empty() {
+        return None;
+    }
+
+    let candidate = PathBuf::from(cleaned);
+    let candidates = if candidate.extension().is_some() {
+        vec![candidate.clone(), PathBuf::from("dances").join(&candidate)]
+    } else {
+        vec![
+            candidate.clone(),
+            candidate.with_extension("svg"),
+            PathBuf::from("dances").join(&candidate),
+            PathBuf::from("dances")
+                .join(&candidate)
+                .with_extension("svg"),
+        ]
+    };
+
+    candidates
+        .into_iter()
+        .find(|path| path.is_file() && path.extension().is_some_and(|ext| ext == "svg"))
+}
+
+fn svg_card_info(path: &Path) -> Result<SvgCardInfo> {
+    let svg =
+        fs::read_to_string(path).with_context(|| format!("could not read {}", path.display()))?;
+    Ok(SvgCardInfo {
+        title: svg_title(&svg),
+        authors: svg_attr(&svg, "authors"),
+        formation: svg_attr(&svg, "formation"),
+        source_id: svg_attr(&svg, "source-id"),
+        source_url: svg_attr(&svg, "source-url"),
+    })
+}
+
+fn existing_card_summary(path: &Path, info: &SvgCardInfo) -> String {
+    let mut lines = vec![format!("Existing card: {}", path.display())];
+    if let Some(title) = &info.title {
+        lines.push(format!("Dance: {title}"));
+    }
+    if let Some(authors) = &info.authors {
+        lines.push(format!("By: {authors}"));
+    }
+    if let Some(formation) = &info.formation {
+        lines.push(format!("Formation: {formation}"));
+    }
+    if let Some(source_id) = &info.source_id {
+        lines.push(format!("Caller’s Box ID: {source_id}"));
+    }
+    if let Some(source_url) = &info.source_url {
+        lines.push(format!("Source: {source_url}"));
+    }
+    lines.join("\n")
+}
+
+fn svg_title(svg: &str) -> Option<String> {
+    let title_re = Regex::new(r#"(?s)<title>(.*?)</title>"#).ok()?;
+    title_re
+        .captures(svg)
+        .and_then(|caps| caps.get(1))
+        .map(|m| decode_html_entities(m.as_str().trim()).into_owned())
+}
+
+fn svg_attr(svg: &str, attr: &str) -> Option<String> {
+    let attr_re = Regex::new(&format!(r#"{attr}="([^"]*)""#)).ok()?;
+    attr_re
+        .captures(svg)
+        .and_then(|caps| caps.get(1))
+        .map(|m| decode_html_entities(m.as_str()).into_owned())
+}
+
 fn confirm_overwrite(path: &Path) -> Result<bool> {
+    confirm_yes_default(&format!("Overwrite {}? [Y/n]: ", path.display()))
+}
+
+fn confirm_yes_default(label: &str) -> Result<bool> {
     loop {
-        let answer = prompt(&format!("Overwrite {}? [y/n]: ", path.display()))?;
+        let answer = prompt(label)?;
         match answer.to_lowercase().as_str() {
-            "y" | "yes" => return Ok(true),
+            "" | "y" | "yes" => return Ok(true),
             "n" | "no" => return Ok(false),
             _ => eprintln!("Enter y or n."),
         }
@@ -681,5 +872,17 @@ mod tests {
     #[test]
     fn slugs_names() {
         assert_eq!(slugify("In the Mood!"), "in-the-mood");
+    }
+
+    #[test]
+    fn reads_svg_title_and_attrs() {
+        let svg = r#"<svg><title>Air &amp; Pants</title><metadata><contra-card authors="Lisa Greenleaf" formation="Duple Minor - Becket" source-id="123" /></metadata></svg>"#;
+        assert_eq!(svg_title(svg), Some("Air & Pants".to_owned()));
+        assert_eq!(svg_attr(svg, "authors"), Some("Lisa Greenleaf".to_owned()));
+        assert_eq!(
+            svg_attr(svg, "formation"),
+            Some("Duple Minor - Becket".to_owned())
+        );
+        assert_eq!(svg_attr(svg, "source-id"), Some("123".to_owned()));
     }
 }

@@ -4,7 +4,7 @@ use std::{
     process::{Command, Stdio},
 };
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result, anyhow, bail};
 
 const DEFAULT_MEDIA: &str = "3x5";
 
@@ -16,6 +16,19 @@ pub struct PrintOptions {
     pub copies: u32,
     pub landscape: bool,
     pub dry_run: bool,
+}
+
+impl PrintOptions {
+    pub fn default_for_path(path: PathBuf) -> Self {
+        Self {
+            path,
+            printer: None,
+            media: DEFAULT_MEDIA.to_owned(),
+            copies: 1,
+            landscape: true,
+            dry_run: false,
+        }
+    }
 }
 
 pub fn list_printers() -> Result<()> {
@@ -42,8 +55,9 @@ pub fn print_svg(options: &PrintOptions) -> Result<()> {
     if options.dry_run {
         if needs_conversion {
             println!(
-                "{}",
-                display_command("sips", &sips_args(&options.path, &print_path))
+                "convert {} -> {}",
+                options.path.display(),
+                print_path.display()
             );
         }
         println!("{}", display_command("lp", &args));
@@ -177,29 +191,20 @@ fn print_ready_path(path: &std::path::Path) -> PathBuf {
 }
 
 fn convert_svg_to_pdf(svg_path: &std::path::Path, pdf_path: &std::path::Path) -> Result<()> {
-    let status = Command::new("sips")
-        .args(sips_args(svg_path, pdf_path))
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .status()
-        .context("could not run sips to convert SVG to PDF")?;
+    let svg = fs::read_to_string(svg_path)
+        .with_context(|| format!("could not read {}", svg_path.display()))?;
+    let mut options = svg2pdf::usvg::Options::default();
+    options.fontdb_mut().load_system_fonts();
+    let tree = svg2pdf::usvg::Tree::from_str(&svg, &options)
+        .map_err(|err| anyhow!("could not parse SVG for PDF conversion: {err}"))?;
+    let pdf = svg2pdf::to_pdf(
+        &tree,
+        svg2pdf::ConversionOptions::default(),
+        svg2pdf::PageOptions::default(),
+    )
+    .map_err(|err| anyhow!("could not convert SVG to PDF: {err}"))?;
 
-    if !status.success() {
-        bail!("sips exited with {status}");
-    }
-
-    Ok(())
-}
-
-fn sips_args(svg_path: &std::path::Path, pdf_path: &std::path::Path) -> Vec<String> {
-    vec![
-        "-s".to_owned(),
-        "format".to_owned(),
-        "pdf".to_owned(),
-        svg_path.display().to_string(),
-        "--out".to_owned(),
-        pdf_path.display().to_string(),
-    ]
+    fs::write(pdf_path, pdf).with_context(|| format!("could not write {}", pdf_path.display()))
 }
 
 fn required_value<'a>(args: &'a [String], index: usize, option: &str) -> Result<&'a str> {

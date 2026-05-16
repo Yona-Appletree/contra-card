@@ -14,6 +14,8 @@ Then enter either:
 - a dance title, such as `In the Mood`
 - a Caller’s Box dance URL
 - a raw Caller’s Box dance ID, such as `14486`
+- an existing SVG path, such as `dances/in-the-mood.svg`
+- an existing SVG filename from `dances/`, such as `in-the-mood.svg`
 
 The CLI shows candidates, previews the selected dance, applies a simple
 gender-neutral terminology pass, and writes:
@@ -23,6 +25,12 @@ dances/<dance-name>.svg
 ```
 
 The SVG is intentionally plain text with editable `<text>` elements.
+
+After writing the SVG, the interactive flow asks whether to print it. Yes/no
+prompts default to yes, so pressing Enter proceeds.
+
+If the input is an existing SVG card, the CLI shows embedded card metadata and
+asks whether to print it.
 
 ## Commands
 
