@@ -1,7 +1,7 @@
 # Contra Card
 
 A tiny Rust CLI for making editable 3x5 SVG calling cards from dances in
-The Caller's Box.
+The Caller's Box and ContraDB.
 
 ## Use
 
@@ -13,6 +13,7 @@ Then enter either:
 
 - a dance title, such as `In the Mood`
 - a Caller’s Box dance URL
+- a ContraDB dance URL
 - a raw Caller’s Box dance ID, such as `14486`
 - an existing SVG path, such as `dances/in-the-mood.svg`
 - an existing SVG filename from `dances/`, such as `in-the-mood.svg`
@@ -98,6 +99,20 @@ the selected dance as JSON:
 
 ```text
 https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=<id>&format=JSON
+```
+
+## ContraDB Fetching
+
+ContraDB search uses its public API:
+
+```text
+POST https://contradb.com/api/v1/dances
+```
+
+Full dance details are currently scraped from the public dance page:
+
+```text
+https://contradb.com/dances/<id>
 ```
 
 ## Current Terminology Pass

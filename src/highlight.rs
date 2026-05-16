@@ -58,28 +58,81 @@ const AMOUNTS: &[&str] = &[
 
 const MOVES: &[&str] = &[
     "right and left through",
+    "right hand balance",
     "right shoulder round",
     "left shoulder round",
+    "partners balance & swing",
+    "neighbors balance & swing",
     "balance and swing",
     "balance the ring",
+    "balance the wave",
+    "box the gnat",
+    "box circulate",
+    "right-hand chain",
+    "pull by dancers",
+    "right left through",
+    "square through",
+    "form an ocean wave",
+    "form a long wave",
+    "pass through",
+    "California twirl",
+    "Rory O'More",
+    "facing star",
+    "meltdown swing",
+    "give & take",
+    "half sashay",
+    "pass by",
+    "roll away",
+    "turn as a couple",
+    "turn as couples",
+    "turn as couple",
+    "bend into a ring",
+    "go down the hall",
+    "go up the hall",
+    "down the hall",
+    "up the hall",
+    "bend the line",
     "long lines",
     "mad robin",
+    "petronella",
+    "RSR",
+    "half poussette",
     "poussette",
+    "circle",
     "circle left",
     "circle right",
+    "allemande",
     "allemande left",
     "allemande right",
+    "do si do",
     "do-si-do",
     "dosido",
+    "promenade across",
     "promenade",
     "courtesy turn",
+    "ocean wave",
+    "long wave",
+    "slice left",
+    "slide left",
+    "slide along set",
+    "zig left zag right",
+    "zig zag",
+    "ricochet",
+    "loop right",
+    "loop wide",
+    "J-hook",
     "pull by",
     "pass left",
     "pass right",
+    "arch",
+    "dive",
     "chain",
+    "star",
     "star left",
     "star right",
+    "balance",
     "swing",
+    "gyre",
     "hey",
 ];
 
@@ -211,6 +264,62 @@ mod tests {
                 (SpanKind::Amount, "counterclockwise"),
                 (SpanKind::Plain, " around "),
                 (SpanKind::Role, "neighbor"),
+            ]
+        );
+    }
+
+    #[test]
+    fn highlights_common_travel_and_setup_moves() {
+        assert_eq!(
+            kinds("Neighbor turn as couples; go up the hall; bend the line; balance"),
+            vec![
+                (SpanKind::Role, "Neighbor"),
+                (SpanKind::Plain, " "),
+                (SpanKind::Move, "turn as couples"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "go up the hall"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "bend the line"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "balance"),
+            ]
+        );
+    }
+
+    #[test]
+    fn highlights_program_move_keywords() {
+        assert_eq!(
+            kinds(
+                "Box the gnat; box circulate; do si do; give & take; square through; \
+                 form an ocean wave; Rory O'More; roll away; pass through; meltdown swing; \
+                 arch & dive; zig left zag right"
+            ),
+            vec![
+                (SpanKind::Move, "Box the gnat"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "box circulate"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "do si do"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "give & take"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "square through"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "form an ocean wave"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "Rory O'More"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "roll away"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "pass through"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "meltdown swing"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "arch"),
+                (SpanKind::Plain, " & "),
+                (SpanKind::Move, "dive"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "zig left zag right"),
             ]
         );
     }

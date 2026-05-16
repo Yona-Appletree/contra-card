@@ -16,11 +16,71 @@ mod print;
 mod wrap;
 
 const BASE_URL: &str = "https://www.ibiblio.org/contradance/thecallersbox";
+const CONTRADB_BASE_URL: &str = "https://contradb.com";
 const BROWSER_USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) contra-card/0.1";
+
+#[derive(Debug)]
+struct CardDance {
+    id: String,
+    title: String,
+    authors: Vec<String>,
+    formation: String,
+    source: DanceSource,
+    source_url: String,
+    source_json_url: Option<String>,
+    phrases: Vec<CardPhrase>,
+    notes: Vec<String>,
+}
+
+#[derive(Debug)]
+struct CardPhrase {
+    name: String,
+    figures: Vec<CardFigure>,
+}
+
+#[derive(Debug)]
+struct CardFigure {
+    beats: Option<String>,
+    text: String,
+}
+
+#[derive(Clone, Copy, Debug)]
+enum DanceSource {
+    CallersBox,
+    ContraDb,
+}
+
+impl std::str::FromStr for DanceSource {
+    type Err = ();
+
+    fn from_str(value: &str) -> std::result::Result<Self, Self::Err> {
+        match value {
+            "the-callers-box" => Ok(DanceSource::CallersBox),
+            "contradb" => Ok(DanceSource::ContraDb),
+            _ => Err(()),
+        }
+    }
+}
+
+impl DanceSource {
+    fn label(self) -> &'static str {
+        match self {
+            DanceSource::CallersBox => "Caller’s Box",
+            DanceSource::ContraDb => "ContraDB",
+        }
+    }
+
+    fn metadata_value(self) -> &'static str {
+        match self {
+            DanceSource::CallersBox => "the-callers-box",
+            DanceSource::ContraDb => "contradb",
+        }
+    }
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
-struct Dance {
+struct CallersBoxDance {
     #[serde(rename = "ID")]
     id: String,
     name: String,
@@ -30,22 +90,86 @@ struct Dance {
     progression: String,
     direction: String,
     #[serde(rename = "phrases")]
-    phrases: Vec<Phrase>,
+    phrases: Vec<CallersBoxPhrase>,
     calling_notes: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]
-struct Phrase {
+struct CallersBoxPhrase {
     name: String,
     figures: Vec<String>,
 }
 
 #[derive(Debug)]
-struct SearchResult {
+struct DanceCandidate {
+    source: DanceSource,
     id: String,
     name: String,
     author: String,
     formation: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContraDbSearchResponse {
+    dances: Vec<ContraDbSearchDance>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ContraDbSearchDance {
+    id: u64,
+    title: String,
+    choreographer_name: String,
+    formation: String,
+}
+
+impl From<CallersBoxDance> for CardDance {
+    fn from(dance: CallersBoxDance) -> Self {
+        let id = dance.id.clone();
+        let source_url = format!("{BASE_URL}/dance.php?id={id}");
+        let formation = callers_box_formation(&dance);
+        CardDance {
+            id: dance.id,
+            title: dance.name,
+            authors: dance.authors,
+            formation,
+            source: DanceSource::CallersBox,
+            source_json_url: Some(format!("{source_url}&format=JSON")),
+            source_url,
+            phrases: dance
+                .phrases
+                .into_iter()
+                .map(|phrase| CardPhrase {
+                    name: phrase.name,
+                    figures: phrase
+                        .figures
+                        .into_iter()
+                        .map(|figure| {
+                            let (beats, text) = split_beats(&figure);
+                            CardFigure {
+                                beats,
+                                text: text.to_owned(),
+                            }
+                        })
+                        .collect(),
+                })
+                .collect(),
+            notes: dance.calling_notes,
+        }
+    }
+}
+
+fn callers_box_formation(dance: &CallersBoxDance) -> String {
+    let mut parts = vec![dance.formation_base.clone()];
+    if !dance.formation_detail.trim().is_empty() {
+        parts.push(dance.formation_detail.clone());
+    }
+    if !dance.progression.trim().is_empty() {
+        parts.push(format!("{} progression", dance.progression));
+    }
+    if !dance.direction.trim().is_empty() {
+        parts.push(dance.direction.clone());
+    }
+    parts.join(" | ")
 }
 
 #[derive(Debug)]
@@ -63,6 +187,7 @@ struct CardLayout {
     beats_font_size: f32,
     figure_font_size: f32,
     notes_font_size: f32,
+    title_font_size: f32,
     max_figure_chars: usize,
     max_note_chars: usize,
 }
@@ -72,6 +197,7 @@ struct SvgCardInfo {
     title: Option<String>,
     authors: Option<String>,
     formation: Option<String>,
+    source: Option<DanceSource>,
     source_id: Option<String>,
     source_url: Option<String>,
 }
@@ -164,7 +290,11 @@ fn regen_command(args: &[String]) -> Result<()> {
     let yes = args.iter().any(|arg| arg == "--yes" || arg == "-y");
     let path = PathBuf::from(path_arg);
     let source_id = source_id_from_svg(&path)?;
-    let dance = fetch_dance(&source_id)?;
+    let source = svg_card_info(&path)?.source;
+    let dance = match source.unwrap_or(DanceSource::CallersBox) {
+        DanceSource::CallersBox => fetch_callers_box_dance(&source_id)?,
+        DanceSource::ContraDb => fetch_contradb_dance(&source_id)?,
+    };
 
     println!("\n{}", preview_text(&dance));
     if !yes && !confirm_overwrite(&path)? {
@@ -203,7 +333,7 @@ Usage:
   contra-card print <SVG>     Print an SVG card using media=3x5
 
 Notes:
-  QUERY can be a dance title, Caller’s Box URL, or raw Caller’s Box ID.
+  QUERY can be a dance title, Caller’s Box URL, ContraDB URL, or raw Caller’s Box ID.
   The interactive prompt also accepts existing SVG paths or filenames from dances/.
   Interactive yes/no prompts default to yes, so Enter proceeds.
   Print defaults to your custom paper size named 3x5 and landscape orientation.
@@ -213,9 +343,12 @@ Notes:
     );
 }
 
-fn dance_from_input(input: &str) -> Result<Dance> {
+fn dance_from_input(input: &str) -> Result<CardDance> {
+    if let Some(id) = contradb_id_from_input(input) {
+        return fetch_contradb_dance(&id);
+    }
     if let Some(id) = id_from_input(input) {
-        return fetch_dance(&id);
+        return fetch_callers_box_dance(&id);
     }
 
     let candidates = search_by_title(input)?;
@@ -227,8 +360,9 @@ fn dance_from_input(input: &str) -> Result<Dance> {
     println!("\nMatches:");
     for (i, candidate) in candidates.iter().take(shown).enumerate() {
         println!(
-            "{:>2}. {} — {} ({})",
+            "{:>2}. [{}] {} — {} ({})",
             i + 1,
+            candidate.source.label(),
             candidate.name,
             candidate.author,
             candidate.formation
@@ -257,7 +391,10 @@ fn dance_from_input(input: &str) -> Result<Dance> {
             continue;
         };
 
-        return fetch_dance(&candidate.id);
+        return match candidate.source {
+            DanceSource::CallersBox => fetch_callers_box_dance(&candidate.id),
+            DanceSource::ContraDb => fetch_contradb_dance(&candidate.id),
+        };
     }
 }
 
@@ -269,7 +406,27 @@ fn id_from_input(input: &str) -> Option<String> {
         .map(|m| m.as_str().to_owned())
 }
 
-fn search_by_title(title: &str) -> Result<Vec<SearchResult>> {
+fn contradb_id_from_input(input: &str) -> Option<String> {
+    if !input.contains("contradb.com") {
+        return None;
+    }
+    let id_re = Regex::new(r"/dances/(\d+)").ok()?;
+    id_re
+        .captures(input)
+        .and_then(|caps| caps.get(1))
+        .map(|m| m.as_str().to_owned())
+}
+
+fn search_by_title(title: &str) -> Result<Vec<DanceCandidate>> {
+    let mut candidates = search_callers_box_by_title(title)?;
+    match search_contradb_by_title(title) {
+        Ok(mut contradb) => candidates.append(&mut contradb),
+        Err(err) => eprintln!("ContraDB search failed: {err:#}"),
+    }
+    Ok(candidates)
+}
+
+fn search_callers_box_by_title(title: &str) -> Result<Vec<DanceCandidate>> {
     let url = format!(
         "{BASE_URL}/index.php?title={}",
         urlencoding::encode(title.trim())
@@ -300,7 +457,8 @@ fn search_by_title(title: &str) -> Result<Vec<SearchResult>> {
 
     Ok(row_re
         .captures_iter(&html)
-        .map(|caps| SearchResult {
+        .map(|caps| DanceCandidate {
+            source: DanceSource::CallersBox,
             id: caps[1].to_owned(),
             name: clean_html(&caps[2]),
             author: clean_html(&caps[3]),
@@ -309,16 +467,115 @@ fn search_by_title(title: &str) -> Result<Vec<SearchResult>> {
         .collect())
 }
 
-fn fetch_dance(id: &str) -> Result<Dance> {
+fn search_contradb_by_title(title: &str) -> Result<Vec<DanceCandidate>> {
+    let body = serde_json::json!({
+        "filter": ["title", title],
+        "count": 25,
+        "offset": 0,
+    });
+    let response = http_client()?
+        .post(format!("{CONTRADB_BASE_URL}/api/v1/dances"))
+        .json(&body)
+        .send()
+        .context("ContraDB search request failed")?
+        .error_for_status()
+        .context("ContraDB search returned an error")?
+        .json::<ContraDbSearchResponse>()
+        .context("could not parse ContraDB search response")?;
+
+    Ok(response
+        .dances
+        .into_iter()
+        .map(|dance| DanceCandidate {
+            source: DanceSource::ContraDb,
+            id: dance.id.to_string(),
+            name: dance.title,
+            author: dance.choreographer_name,
+            formation: dance.formation,
+        })
+        .collect())
+}
+
+fn fetch_contradb_dance(id: &str) -> Result<CardDance> {
+    let source_url = format!("{CONTRADB_BASE_URL}/dances/{id}");
+    let html = http_client()?
+        .get(&source_url)
+        .send()
+        .context("ContraDB dance request failed")?
+        .error_for_status()
+        .context("ContraDB dance returned an error")?
+        .text()
+        .context("could not read ContraDB dance response")?;
+    parse_contradb_dance(id, &source_url, &html)
+}
+
+fn parse_contradb_dance(id: &str, source_url: &str, html: &str) -> Result<CardDance> {
+    let title = capture_clean(html, r#"(?s)<h1 class="dance-show-title">(.*?)</h1>"#)
+        .context("ContraDB dance page did not include a title")?;
+    let author = capture_clean(
+        html,
+        r#"(?s)<p class="dance-show-choreographer">.*?<strong>.*?>(.*?)</a>"#,
+    )
+    .unwrap_or_else(|| "Unknown".to_owned());
+    let formation = capture_clean(
+        html,
+        r#"(?s)<p class="dance-show-formation">formation:\s*(.*?)</p>"#,
+    )
+    .unwrap_or_default();
+
+    let row_re = Regex::new(
+        r#"(?s)<tr class="[^"]*">\s*<td>(.*?)</td>\s*<td class=dance-show-beats>(.*?)</td>\s*<td><div class="show-figure">(.*?)</div>"#,
+    )?;
+    let mut phrases = Vec::<CardPhrase>::new();
+    for caps in row_re.captures_iter(html) {
+        let phrase_name = clean_html(&caps[1]);
+        if !phrase_name.is_empty() || phrases.is_empty() {
+            phrases.push(CardPhrase {
+                name: phrase_name,
+                figures: Vec::new(),
+            });
+        }
+        let Some(phrase) = phrases.last_mut() else {
+            continue;
+        };
+        phrase.figures.push(CardFigure {
+            beats: Some(clean_html(&caps[2])).filter(|s| !s.is_empty()),
+            text: clean_html(&caps[3]),
+        });
+    }
+
+    let notes = capture_clean(
+        html,
+        r#"(?s)<div class="dance-show-notes"><div class='contra-markdown-block'>(.*?)</div></div>"#,
+    )
+    .into_iter()
+    .filter(|note| !note.trim().is_empty())
+    .collect();
+
+    Ok(CardDance {
+        id: id.to_owned(),
+        title,
+        authors: vec![author],
+        formation,
+        source: DanceSource::ContraDb,
+        source_url: source_url.to_owned(),
+        source_json_url: None,
+        phrases,
+        notes,
+    })
+}
+
+fn fetch_callers_box_dance(id: &str) -> Result<CardDance> {
     let url = format!("{BASE_URL}/dance.php?id={id}&format=JSON");
-    http_client()?
+    let dance = http_client()?
         .get(url)
         .send()
         .context("dance request failed")?
         .error_for_status()
         .context("dance request returned an error")?
-        .json::<Dance>()
-        .context("could not parse dance JSON")
+        .json::<CallersBoxDance>()
+        .context("could not parse dance JSON")?;
+    Ok(dance.into())
 }
 
 fn http_client() -> Result<Client> {
@@ -328,7 +585,7 @@ fn http_client() -> Result<Client> {
         .context("could not build HTTP client")
 }
 
-fn confirm_dance(dance: &Dance) -> Result<bool> {
+fn confirm_dance(dance: &CardDance) -> Result<bool> {
     println!("\n{}", preview_text(dance));
 
     loop {
@@ -341,62 +598,66 @@ fn confirm_dance(dance: &Dance) -> Result<bool> {
     }
 }
 
-fn preview_text(dance: &Dance) -> String {
+fn preview_text(dance: &CardDance) -> String {
     let mut out = String::new();
-    out.push_str(&format!("{} — {}\n", dance.name, dance.authors.join(", ")));
+    out.push_str(&format!("{} — {}\n", dance.title, dance.authors.join(", ")));
+    out.push_str(&format!("Source: {}\n", dance.source.label()));
     out.push_str(&format!("{}\n", dance_meta(dance)));
     out.push_str("----------------------------------------\n");
 
     for phrase in &dance.phrases {
         for (i, figure) in phrase.figures.iter().enumerate() {
-            let (beats, text) = split_beats(figure);
             let role = if i == 0 { phrase.name.as_str() } else { "" };
             out.push_str(&format!(
                 "{:<3} {:>2}  {}\n",
                 role,
-                beats.unwrap_or_default(),
-                neutralize_terms(text)
+                figure.beats.clone().unwrap_or_default(),
+                normalize_card_text(&figure.text)
             ));
         }
     }
 
-    if !dance.calling_notes.is_empty() {
+    if !dance.notes.is_empty() {
         out.push_str("\nNotes:\n");
-        for note in &dance.calling_notes {
-            out.push_str(&format!("- {}\n", neutralize_terms(note)));
+        for note in &dance.notes {
+            out.push_str(&format!("- {}\n", normalize_card_text(note)));
         }
     }
 
     out
 }
 
-fn write_svg(dance: &Dance) -> Result<PathBuf> {
+fn write_svg(dance: &CardDance) -> Result<PathBuf> {
     fs::create_dir_all("dances").context("could not create dances directory")?;
 
-    let filename = format!("{}.svg", slugify(&dance.name));
+    let filename = format!("{}.svg", slugify(&dance.title));
     let path = PathBuf::from("dances").join(filename);
     write_svg_to_path(dance, &path)?;
 
     Ok(path)
 }
 
-fn write_svg_to_path(dance: &Dance, path: &Path) -> Result<()> {
+fn write_svg_to_path(dance: &CardDance, path: &Path) -> Result<()> {
     let svg = render_svg(dance);
     fs::write(path, svg).with_context(|| format!("could not write {}", path.display()))
 }
 
-fn render_svg(dance: &Dance) -> String {
-    let title = encode_text(&dance.name);
+fn render_svg(dance: &CardDance) -> String {
+    let title = encode_text(&dance.title);
     let authors_text = format!("By {}", dance.authors.join(", "));
     let authors = encode_text(&authors_text);
     let meta_text = dance_meta(dance);
     let meta = render_header_meta(&meta_text);
-    let source_url = format!("{BASE_URL}/dance.php?id={}", dance.id);
-    let source = encode_double_quoted_attribute(&source_url);
+    let source = encode_double_quoted_attribute(&dance.source_url);
     let source_id = encode_double_quoted_attribute(&dance.id);
-    let source_json_url = format!("{source_url}&format=JSON");
-    let source_json = encode_double_quoted_attribute(&source_json_url);
-    let metadata_name = encode_double_quoted_attribute(&dance.name);
+    let source_json = encode_double_quoted_attribute(
+        dance
+            .source_json_url
+            .as_deref()
+            .unwrap_or(dance.source_url.as_str()),
+    );
+    let metadata_source = dance.source.metadata_value();
+    let metadata_name = encode_double_quoted_attribute(&dance.title);
     let metadata_authors_text = dance.authors.join(", ");
     let metadata_authors = encode_double_quoted_attribute(&metadata_authors_text);
     let metadata_formation = encode_double_quoted_attribute(&meta_text);
@@ -417,11 +678,11 @@ fn render_svg(dance: &Dance) -> String {
         ));
 
         for figure in &phrase.figures {
-            let (beats, text) = split_beats(figure);
-            let wrapped_lines = wrap::wrap_text(&neutralize_terms(text), layout.max_figure_chars);
+            let wrapped_lines =
+                wrap::wrap_text(&normalize_card_text(&figure.text), layout.max_figure_chars);
             for (line_index, line) in wrapped_lines.iter().enumerate() {
                 let beat_text = if line_index == 0 {
-                    encode_text(&beats.clone().unwrap_or_default()).to_string()
+                    encode_text(&figure.beats.clone().unwrap_or_default()).to_string()
                 } else {
                     String::new()
                 };
@@ -452,26 +713,29 @@ fn render_svg(dance: &Dance) -> String {
     }
 
     let mut notes = String::new();
-    if !dance.calling_notes.is_empty() {
-        notes.push_str(&format!(
-            r#"<text x="{notes_x:.1}" y="{y:.1}" class="notes-label">Notes</text>"#,
-            notes_x = layout.notes_x,
-        ));
-        y += layout.row_step;
-        for note in &dance.calling_notes {
+    if !dance.notes.is_empty() {
+        let mut first_note_line = true;
+        for note in &dance.notes {
             if note.trim().is_empty() {
                 continue;
             }
-            for line in wrap::wrap_text(&neutralize_terms(note), layout.max_note_chars) {
-                let note_x = if line.indent {
+            for line in wrap::wrap_text(&normalize_card_text(note), layout.max_note_chars) {
+                let note_x = if line.indent || !first_note_line {
                     layout.notes_x + 12.0
                 } else {
                     layout.notes_x
                 };
-                notes.push_str(&format!(
-                    r#"<text x="{note_x:.1}" y="{y:.1}" class="notes">{}</text>"#,
-                    encode_text(&line.text),
-                ));
+                let text = encode_text(&line.text);
+                if first_note_line {
+                    notes.push_str(&format!(
+                        r#"<text x="{note_x:.1}" y="{y:.1}" class="notes"><tspan class="notes-label">Notes:</tspan><tspan> {text}</tspan></text>"#,
+                    ));
+                } else {
+                    notes.push_str(&format!(
+                        r#"<text x="{note_x:.1}" y="{y:.1}" class="notes">{text}</text>"#,
+                    ));
+                }
+                first_note_line = false;
                 y += layout.row_step;
             }
         }
@@ -488,7 +752,7 @@ fn render_svg(dance: &Dance) -> String {
       dance-name="{metadata_name}"
       authors="{metadata_authors}"
       formation="{metadata_formation}"
-      source="the-callers-box"
+      source="{metadata_source}"
       source-id="{source_id}"
       source-url="{source}"
       source-json-url="{source_json}" />
@@ -498,7 +762,7 @@ fn render_svg(dance: &Dance) -> String {
     .phrase-rule {{ stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }}
     .top-rule {{ stroke: #b64545; stroke-width: 2; }}
     text {{ fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }}
-    .title {{ font-size: 26px; font-weight: 700; }}
+    .title {{ font-size: {title_font_size:.1}px; font-weight: 700; }}
     .authors {{ font-size: 14px; }}
     .meta {{ font-size: 12px; text-anchor: end; }}
     .phrase {{ font-size: {phrase_font_size:.1}px; font-weight: 700; dominant-baseline: middle; }}
@@ -527,6 +791,7 @@ fn render_svg(dance: &Dance) -> String {
         beats_font_size = layout.beats_font_size,
         figure_font_size = layout.figure_font_size,
         notes_font_size = layout.notes_font_size,
+        title_font_size = layout.title_font_size,
     )
 }
 
@@ -557,7 +822,7 @@ fn render_header_meta(text: &str) -> String {
         .collect()
 }
 
-fn card_layout(dance: &Dance) -> CardLayout {
+fn card_layout(dance: &CardDance) -> CardLayout {
     let base_figure_font_size = 17.0;
     let figure_x = 104.0;
     let right_edge = 484.0;
@@ -566,14 +831,14 @@ fn card_layout(dance: &Dance) -> CardLayout {
     let max_note_chars = max_chars_for_width(right_edge - notes_x, 13.0);
     let figure_rows = figure_visual_rows(dance, max_figure_chars);
     let phrase_gaps = dance.phrases.len().saturating_sub(1);
-    let note_rows = if dance.calling_notes.is_empty() {
+    let note_rows = if dance.notes.is_empty() {
         0
     } else {
-        1 + dance
-            .calling_notes
+        dance
+            .notes
             .iter()
             .filter(|note| !note.trim().is_empty())
-            .map(|note| wrap::wrap_text(&neutralize_terms(note), max_note_chars).len())
+            .map(|note| wrap::wrap_text(&normalize_card_text(note), max_note_chars).len())
             .sum::<usize>()
     };
 
@@ -609,12 +874,25 @@ fn card_layout(dance: &Dance) -> CardLayout {
         beats_font_size: 13.0 * scale,
         figure_font_size: base_figure_font_size * scale,
         notes_font_size: 13.0 * scale,
+        title_font_size: title_font_size(&dance.title),
         max_figure_chars,
         max_note_chars,
     }
 }
 
-fn figure_visual_rows(dance: &Dance, max_chars: usize) -> usize {
+fn title_font_size(title: &str) -> f32 {
+    let max_width = 330.0;
+    let base_size = 26.0;
+    let min_size = 17.0;
+    let estimated_width = text_width(title, base_size, 0.56);
+    if estimated_width <= max_width {
+        base_size
+    } else {
+        (base_size * max_width / estimated_width).max(min_size)
+    }
+}
+
+fn figure_visual_rows(dance: &CardDance, max_chars: usize) -> usize {
     dance
         .phrases
         .iter()
@@ -622,30 +900,38 @@ fn figure_visual_rows(dance: &Dance, max_chars: usize) -> usize {
             phrase
                 .figures
                 .iter()
-                .map(|figure| {
-                    let (_, text) = split_beats(figure);
-                    wrap::wrap_text(&neutralize_terms(text), max_chars).len()
-                })
+                .map(|figure| wrap::wrap_text(&normalize_card_text(&figure.text), max_chars).len())
                 .sum::<usize>()
                 .max(1)
         })
         .sum()
 }
 
-fn phrase_visual_rows(phrase: &Phrase, layout: &CardLayout) -> usize {
+fn phrase_visual_rows(phrase: &CardPhrase, layout: &CardLayout) -> usize {
     phrase
         .figures
         .iter()
         .map(|figure| {
-            let (_, text) = split_beats(figure);
-            wrap::wrap_text(&neutralize_terms(text), layout.max_figure_chars).len()
+            wrap::wrap_text(&normalize_card_text(&figure.text), layout.max_figure_chars).len()
         })
         .sum::<usize>()
         .max(1)
 }
 
 fn max_chars_for_width(width: f32, font_size: f32) -> usize {
-    (width / (font_size * 0.47)).floor().max(16.0) as usize
+    (width / (font_size * 0.45)).floor().max(16.0) as usize
+}
+
+fn text_width(text: &str, font_size: f32, average_em: f32) -> f32 {
+    text.chars()
+        .map(|ch| match ch {
+            'i' | 'l' | 'I' | '|' | ';' | ':' | '.' | ',' | '\'' => 0.32,
+            'm' | 'w' | 'M' | 'W' => 0.9,
+            ' ' => 0.28,
+            _ => average_em,
+        })
+        .sum::<f32>()
+        * font_size
 }
 
 fn content_height(content_rows: usize, phrase_gaps: usize, row_step: f32, phrase_gap: f32) -> f32 {
@@ -656,18 +942,29 @@ fn content_height(content_rows: usize, phrase_gaps: usize, row_step: f32, phrase
     }
 }
 
-fn dance_meta(dance: &Dance) -> String {
-    let mut parts = vec![dance.formation_base.clone()];
-    if !dance.formation_detail.trim().is_empty() {
-        parts.push(dance.formation_detail.clone());
-    }
-    if !dance.progression.trim().is_empty() {
-        parts.push(format!("{} progression", dance.progression));
-    }
-    if !dance.direction.trim().is_empty() {
-        parts.push(dance.direction.clone());
-    }
-    parts.join(" | ")
+fn dance_meta(dance: &CardDance) -> String {
+    compact_formation(&dance.formation)
+}
+
+fn compact_formation(formation: &str) -> String {
+    formation
+        .split('|')
+        .map(str::trim)
+        .filter(|part| !part.eq_ignore_ascii_case("Single progression"))
+        .map(|part| {
+            let part = part.replace("Duple Minor", "Hands 4");
+            if part.eq_ignore_ascii_case("Becket ccw") {
+                "Hands 4 - Becket | CCW".to_owned()
+            } else if part.eq_ignore_ascii_case("Becket") {
+                "Hands 4 - Becket".to_owned()
+            } else if part.eq_ignore_ascii_case("improper") {
+                "Hands 4 - Improper".to_owned()
+            } else {
+                part
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" | ")
 }
 
 fn split_beats(figure: &str) -> (Option<String>, &str) {
@@ -686,10 +983,15 @@ fn neutralize_terms(text: &str) -> String {
         (r"\bman\b", "Lark"),
         (r"\bgents\b", "Larks"),
         (r"\bgentlemen\b", "Larks"),
+        (r"\bgentlespoons\b", "Larks"),
+        (r"\bgentlespoon\b", "Lark"),
         (r"\bladies\b", "Robins"),
         (r"\blady\b", "Robin"),
+        (r"\bladles\b", "Robins"),
+        (r"\bladle\b", "Robin"),
         (r"\bwomen\b", "Robins"),
         (r"\bwoman\b", "Robin"),
+        (r"\bgyre\b", "RSR"),
     ];
 
     let mut out = text.to_owned();
@@ -697,13 +999,108 @@ fn neutralize_terms(text: &str) -> String {
         let re = Regex::new(&format!("(?i){pattern}")).expect("valid replacement regex");
         out = re.replace_all(&out, replacement).into_owned();
     }
+
+    neutralize_shorthand(&out)
+}
+
+fn normalize_card_text(text: &str) -> String {
+    sentence_case_preserving_tokens(&neutralize_terms(text))
+}
+
+fn sentence_case_preserving_tokens(text: &str) -> String {
+    let whitespace_re = Regex::new(r"\s+").expect("valid whitespace regex");
+    let token_re = Regex::new(r"[A-Za-z][A-Za-z0-9]*|[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]*")
+        .expect("valid token regex");
+    let collapsed = whitespace_re.replace_all(text.trim(), " ");
+    let mut saw_capitalizable_token = false;
+
+    token_re
+        .replace_all(&collapsed, |caps: &regex::Captures| {
+            let token = &caps[0];
+            if is_preserved_short_token(token) {
+                return token.to_ascii_uppercase();
+            }
+
+            let normalized =
+                canonical_card_word(token).unwrap_or_else(|| token.to_ascii_lowercase());
+            if saw_capitalizable_token {
+                normalized
+            } else {
+                saw_capitalizable_token = true;
+                capitalize_first_ascii(&normalized)
+            }
+        })
+        .into_owned()
+}
+
+fn is_preserved_short_token(token: &str) -> bool {
+    let shorthand_re = Regex::new(r"(?i)^(?:RSR|BTR|[NPLR][LR]|[LR][12]|N[12][LR])$")
+        .expect("valid shorthand regex");
+    shorthand_re.is_match(token)
+}
+
+fn canonical_card_word(token: &str) -> Option<String> {
+    let canonical = match token.to_ascii_lowercase().as_str() {
+        "lark" => "Lark",
+        "larks" => "Larks",
+        "robin" => "Robin",
+        "robins" => "Robins",
+        "partner" => "Partner",
+        "partners" => "Partners",
+        "neighbor" => "Neighbor",
+        "neighbors" => "Neighbors",
+        "california" => "California",
+        _ => return None,
+    };
+    Some(canonical.to_owned())
+}
+
+fn capitalize_first_ascii(text: &str) -> String {
+    let mut chars = text.chars();
+    let Some(first) = chars.next() else {
+        return String::new();
+    };
+    let mut out = first.to_ascii_uppercase().to_string();
+    out.push_str(chars.as_str());
     out
+}
+
+fn neutralize_shorthand(text: &str) -> String {
+    let dancer_number_re = Regex::new(r"\b([MW])([12])\b").expect("valid shorthand regex");
+    let pass_shorthand_re = Regex::new(r"\b([MW])([LR])\b").expect("valid shorthand regex");
+
+    let out = dancer_number_re.replace_all(text, |caps: &regex::Captures| {
+        let role = match &caps[1] {
+            "M" => "L",
+            "W" => "R",
+            other => other,
+        };
+        format!("{role}{}", &caps[2])
+    });
+
+    pass_shorthand_re
+        .replace_all(&out, |caps: &regex::Captures| {
+            let role = match &caps[1] {
+                "M" => "L",
+                "W" => "R",
+                other => other,
+            };
+            format!("{role}{}", &caps[2])
+        })
+        .into_owned()
 }
 
 fn clean_html(input: &str) -> String {
     let tag_re = Regex::new(r"<[^>]*>").expect("valid tag regex");
     let without_tags = tag_re.replace_all(input, "");
     decode_html_entities(without_tags.trim()).into_owned()
+}
+
+fn capture_clean(input: &str, pattern: &str) -> Option<String> {
+    let re = Regex::new(pattern).ok()?;
+    re.captures(input)
+        .and_then(|caps| caps.get(1))
+        .map(|m| clean_html(m.as_str()))
 }
 
 fn slugify(name: &str) -> String {
@@ -771,6 +1168,7 @@ fn svg_card_info(path: &Path) -> Result<SvgCardInfo> {
         title: svg_title(&svg),
         authors: svg_attr(&svg, "authors"),
         formation: svg_attr(&svg, "formation"),
+        source: svg_attr(&svg, "source").and_then(|value| value.parse().ok()),
         source_id: svg_attr(&svg, "source-id"),
         source_url: svg_attr(&svg, "source-url"),
     })
@@ -786,6 +1184,9 @@ fn existing_card_summary(path: &Path, info: &SvgCardInfo) -> String {
     }
     if let Some(formation) = &info.formation {
         lines.push(format!("Formation: {formation}"));
+    }
+    if let Some(source) = info.source {
+        lines.push(format!("Source DB: {}", source.label()));
     }
     if let Some(source_id) = &info.source_id {
         lines.push(format!("Caller’s Box ID: {source_id}"));
@@ -864,14 +1265,72 @@ mod tests {
     #[test]
     fn neutralizes_role_terms() {
         assert_eq!(
-            neutralize_terms("Men pass left; ladies chain; mad robin"),
-            "Larks pass left; Robins chain; mad robin"
+            neutralize_terms("Men pass left; ladies chain; gentlespoons and ladles"),
+            "Larks pass left; Robins chain; Larks and Robins"
         );
+    }
+
+    #[test]
+    fn neutralizes_gendered_shorthand() {
+        assert_eq!(
+            neutralize_terms("(W2-M1-W1-M2) ML;WR;WL;MR"),
+            "(R2-L1-R1-L2) LL;RR;RL;LR"
+        );
+    }
+
+    #[test]
+    fn preserves_progress_symbol() {
+        assert_eq!(
+            neutralize_terms("partners California twirl ⁋"),
+            "partners California twirl ⁋"
+        );
+    }
+
+    #[test]
+    fn converts_gyre_to_local_shorthand() {
+        assert_eq!(neutralize_terms("Robins gyre once"), "Robins RSR once");
+    }
+
+    #[test]
+    fn normalizes_card_text_casing() {
+        assert_eq!(
+            normalize_card_text("balance &  petronella"),
+            "Balance & petronella"
+        );
+        assert_eq!(normalize_card_text("neighbors swing"), "Neighbors swing");
+        assert_eq!(
+            normalize_card_text("partners California twirl ⁋"),
+            "Partners California twirl ⁋"
+        );
+        assert_eq!(
+            normalize_card_text("(W2-M1-W1-M2) ML;WR;WL;MR hey"),
+            "(R2-L1-R1-L2) LL;RR;RL;LR Hey"
+        );
+        assert_eq!(normalize_card_text("Robins gyre 1½"), "Robins RSR 1½");
     }
 
     #[test]
     fn slugs_names() {
         assert_eq!(slugify("In the Mood!"), "in-the-mood");
+    }
+
+    #[test]
+    fn scales_long_titles() {
+        assert_eq!(title_font_size("In the Mood"), 26.0);
+        assert!(title_font_size("Maliza's Magical Mystery Motion") < 22.0);
+    }
+
+    #[test]
+    fn compacts_common_formation_metadata() {
+        assert_eq!(
+            compact_formation("Duple Minor - Improper | Single progression"),
+            "Hands 4 - Improper"
+        );
+        assert_eq!(
+            compact_formation("Duple Minor - Becket | Single progression | CCW"),
+            "Hands 4 - Becket | CCW"
+        );
+        assert_eq!(compact_formation("Becket ccw"), "Hands 4 - Becket | CCW");
     }
 
     #[test]
@@ -884,5 +1343,27 @@ mod tests {
             Some("Duple Minor - Becket".to_owned())
         );
         assert_eq!(svg_attr(svg, "source-id"), Some("123".to_owned()));
+    }
+
+    #[test]
+    fn parses_contradb_dance_page() {
+        let html = r#"
+          <h1 class="dance-show-title">Test Dance</h1>
+          <p class="dance-show-choreographer">by: <strong><a href="/choreographers/1">Jane Caller</a></strong></p>
+          <p class="dance-show-formation">formation: Becket ccw </p>
+          <table>
+            <tr class="a1b1 "><td>A1</td><td class=dance-show-beats>8</td><td><div class="show-figure">neighbors swing</div></td></tr>
+            <tr class="a1b1 "><td></td><td class=dance-show-beats>8</td><td><div class="show-figure">ladles chain</div></td></tr>
+          </table>
+          <div class="dance-show-notes"><div class='contra-markdown-block'>A note</div></div>
+        "#;
+        let dance = parse_contradb_dance("42", "https://contradb.com/dances/42", html).unwrap();
+        assert_eq!(dance.title, "Test Dance");
+        assert_eq!(dance.authors, vec!["Jane Caller"]);
+        assert_eq!(dance.formation, "Becket ccw");
+        assert_eq!(dance.source.metadata_value(), "contradb");
+        assert_eq!(dance.phrases[0].name, "A1");
+        assert_eq!(dance.phrases[0].figures[1].text, "ladles chain");
+        assert_eq!(dance.notes, vec!["A note"]);
     }
 }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Green Lake Twirl</title>
+  <desc>Contra dance calling card generated from https://contradb.com/dances/548</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="Green Lake Twirl"
+      authors="Isaac Banner"
+      formation="Hands 4 - Becket"
+      source="contradb"
+      source-id="548"
+      source-url="https://contradb.com/dances/548"
+      source-json-url="https://contradb.com/dances/548" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 26.0px; font-weight: 700; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13.0px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17.0px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 13.0px; font-weight: 700; }
+    .notes { font-size: 13.0px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 120.0 H484"/>
+<path class="phrase-rule" d="M16.0 172.0 H484"/>
+<path class="phrase-rule" d="M16.0 224.0 H484"/>
+
+    <text x="16" y="36" class="title">Green Lake Twirl</text>
+    <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan></text>
+    <text x="472" y="40" class="meta">By Isaac Banner</text>
+    <text x="16.0" y="87.0" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">4</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="move">Slice left</tspan><tspan class="plain"> ⁋</tspan></text>
+<text x="68.0" y="87.0" class="beats">4</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> take </tspan><tspan class="role">Neighbors</tspan></text>
+<text x="68.0" y="108.0" class="beats">8</text>
+<text x="104.0" y="108.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="149.5" class="phrase">A2</text>
+<text x="68.0" y="139.0" class="beats">8</text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> 3 places</tspan></text>
+<text x="68.0" y="160.0" class="beats">8</text>
+<text x="104.0" y="160.0" class="figure" xml:space="preserve"><tspan class="role">Partners</tspan><tspan class="plain"> </tspan><tspan class="move">do si do</tspan><tspan class="plain"> 1¼ into short waves</tspan></text>
+<text x="16.0" y="201.5" class="phrase">B1</text>
+<text x="68.0" y="191.0" class="beats">8</text>
+<text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">rory o'more</tspan><tspan class="plain"> right</tspan></text>
+<text x="68.0" y="212.0" class="beats">8</text>
+<text x="104.0" y="212.0" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">rory o'more</tspan><tspan class="plain"> left</tspan></text>
+<text x="16.0" y="243.0" class="phrase">B2</text>
+<text x="68.0" y="243.0" class="beats">16</text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Partners balance &amp; swing</tspan></text>
+
+    <text x="24.0" y="264.0" class="notes"><tspan class="notes-label">Notes:</tspan><tspan> Inspired by cheat lake twirl by perry shafran</tspan></text>
+  </g>
+</svg>

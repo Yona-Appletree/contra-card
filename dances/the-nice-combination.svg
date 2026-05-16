@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>The Nice Combination</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=1</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="The Nice Combination"
+      authors="Gene Hubert"
+      formation="Hands 4 - Improper"
+      source="the-callers-box"
+      source-id="1"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=1"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=1&amp;format=JSON" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 26px; font-weight: 700; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 15.1px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 10.9px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 14.3px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 10.9px; font-weight: 700; }
+    .notes { font-size: 10.9px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 93.1 H484"/>
+<path class="phrase-rule" d="M16.0 189.9 H484"/>
+<path class="phrase-rule" d="M16.0 233.7 H484"/>
+
+    <text x="16" y="36" class="title">The Nice Combination</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
+    <text x="472" y="40" class="meta">By Gene Hubert</text>
+    <text x="16.0" y="74.8" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">4</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">balance</tspan></text>
+<text x="68.0" y="83.7" class="beats">12</text>
+<text x="104.0" y="83.7" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="145.1" class="phrase">A2</text>
+<text x="68.0" y="109.8" class="beats">6</text>
+<text x="104.0" y="109.8" class="figure" xml:space="preserve"><tspan class="plain">In a line of four, go </tspan><tspan class="move">down the hall</tspan></text>
+<text x="68.0" y="127.4" class="beats"></text>
+<text x="120.0" y="127.4" class="figure" xml:space="preserve"><tspan class="plain">(L1-R2-L2-R1)</tspan></text>
+<text x="68.0" y="145.1" class="beats">2</text>
+<text x="104.0" y="145.1" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">turn as couples</tspan></text>
+<text x="68.0" y="162.8" class="beats">6</text>
+<text x="104.0" y="162.8" class="figure" xml:space="preserve"><tspan class="plain">In a line of four, go </tspan><tspan class="move">up the hall</tspan><tspan class="plain"> (R2-L1-R1-L2)</tspan></text>
+<text x="68.0" y="180.5" class="beats">2</text>
+<text x="104.0" y="180.5" class="figure" xml:space="preserve"><tspan class="move">Bend the line</tspan></text>
+<text x="16.0" y="215.4" class="phrase">B1</text>
+<text x="68.0" y="206.6" class="beats">6</text>
+<text x="104.0" y="206.6" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> </tspan><tspan class="amount">3/4</tspan></text>
+<text x="68.0" y="224.2" class="beats">10</text>
+<text x="104.0" y="224.2" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="259.2" class="phrase">B2</text>
+<text x="68.0" y="250.3" class="beats">8</text>
+<text x="104.0" y="250.3" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan><tspan class="plain"> to </tspan><tspan class="role">neighbor</tspan></text>
+<text x="68.0" y="268.0" class="beats">8</text>
+<text x="104.0" y="268.0" class="figure" xml:space="preserve"><tspan class="move">Star left</tspan><tspan class="plain"> 1</tspan></text>
+
+    
+  </g>
+</svg>

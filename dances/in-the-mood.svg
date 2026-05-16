@@ -7,7 +7,7 @@
       version="0.1"
       dance-name="In the Mood"
       authors="Lindsey Dono, Julian Blechner, Yoyo Zhou"
-      formation="Duple Minor - Becket | Single progression | CCW"
+      formation="Hands 4 - Becket | CCW"
       source="the-callers-box"
       source-id="14486"
       source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=14486"
@@ -39,7 +39,7 @@
 <path class="phrase-rule" d="M16.0 203.0 H484"/>
 
     <text x="16" y="36" class="title">In the Mood</text>
-    <text x="472" y="22" class="meta">Duple Minor - <tspan class="meta-strong">Becket</tspan> | Single progression | CCW</text>
+    <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan> | CCW</text>
     <text x="472" y="40" class="meta">By Lindsey Dono, Julian Blechner, Yoyo Zhou</text>
     <text x="16.0" y="76.5" class="phrase">A1</text>
 <text x="68.0" y="66.0" class="beats">6</text>

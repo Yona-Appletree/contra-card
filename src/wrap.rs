@@ -17,7 +17,8 @@ pub fn wrap_text(text: &str, max_chars: usize) -> Vec<WrappedLine> {
     let mut lines = Vec::new();
     let mut current = String::new();
 
-    for word in text.split_whitespace() {
+    let words = attach_progress_markers(text);
+    for word in &words {
         let pending_len = if current.is_empty() {
             visual_len(word)
         } else {
@@ -60,6 +61,23 @@ fn visual_len(text: &str) -> usize {
         .sum()
 }
 
+fn attach_progress_markers(text: &str) -> Vec<String> {
+    let mut words: Vec<String> = Vec::new();
+    for word in text.split_whitespace() {
+        if word == "⁋" {
+            if let Some(previous) = words.last_mut() {
+                previous.push(' ');
+                previous.push_str(word);
+            } else {
+                words.push(word.to_owned());
+            }
+        } else {
+            words.push(word.to_owned());
+        }
+    }
+    words
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -89,6 +107,17 @@ mod tests {
                     indent: true,
                 },
             ]
+        );
+    }
+
+    #[test]
+    fn keeps_progress_marker_with_previous_words() {
+        assert_eq!(
+            wrap_text("Balance & petronella and turn to face the next ⁋", 48),
+            vec![WrappedLine {
+                text: "Balance & petronella and turn to face the next ⁋".to_owned(),
+                indent: false,
+            }]
         );
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Airpants</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      source="the-callers-box"
+      source-id="4577"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577&amp;format=JSON" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 26px; font-weight: 700; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13.0px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17.0px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 13.0px; font-weight: 700; }
+    .notes { font-size: 13.0px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 99.0 H484"/>
+<path class="phrase-rule" d="M16.0 151.0 H484"/>
+<path class="phrase-rule" d="M16.0 203.0 H484"/>
+
+    <text x="16" y="36" class="title">Airpants</text>
+    <text x="472" y="22" class="meta">Duple Minor - Improper | Single progression</text>
+    <text x="472" y="40" class="meta">By Lisa Greenleaf</text>
+    <text x="16.0" y="76.5" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">4</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> balance</tspan></text>
+<text x="68.0" y="87.0" class="beats">12</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="128.5" class="phrase">A2</text>
+<text x="68.0" y="118.0" class="beats">8</text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="plain">In </tspan><tspan class="move">long lines</tspan><tspan class="plain">, go forward and back</tspan></text>
+<text x="68.0" y="139.0" class="beats">8</text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">allemande right</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">1/2</tspan></text>
+<text x="16.0" y="180.5" class="phrase">B1</text>
+<text x="68.0" y="170.0" class="beats">4</text>
+<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> balance</tspan></text>
+<text x="68.0" y="191.0" class="beats">12</text>
+<text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="232.5" class="phrase">B2</text>
+<text x="68.0" y="222.0" class="beats">6</text>
+<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> </tspan><tspan class="amount">3/4</tspan></text>
+<text x="68.0" y="243.0" class="beats">10</text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">do-si-do</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">1/2</tspan></text>
+
+    
+  </g>
+</svg>
