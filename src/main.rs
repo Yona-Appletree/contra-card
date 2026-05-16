@@ -44,6 +44,22 @@ struct SearchResult {
     formation: String,
 }
 
+#[derive(Debug)]
+struct CardLayout {
+    phrase_x: f32,
+    beats_x: f32,
+    figure_x: f32,
+    left_rule_x: f32,
+    notes_x: f32,
+    body_start: f32,
+    row_step: f32,
+    phrase_gap: f32,
+    phrase_font_size: f32,
+    beats_font_size: f32,
+    figure_font_size: f32,
+    notes_font_size: f32,
+}
+
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().skip(1).collect();
 
@@ -323,55 +339,60 @@ fn render_svg(dance: &Dance) -> String {
     let source_id = encode_double_quoted_attribute(&dance.id);
     let source_json_url = format!("{source_url}&format=JSON");
     let source_json = encode_double_quoted_attribute(&source_json_url);
+    let layout = card_layout(dance);
 
     let mut rows = String::new();
     let mut phrase_rules = String::new();
-    let mut y = 78;
-    let row_step = 21;
-    let phrase_gap = 10;
+    let mut y = layout.body_start;
     for (phrase_index, phrase) in dance.phrases.iter().enumerate() {
         let phrase_start = y;
         let phrase_rows = phrase.figures.len().max(1);
-        let phrase_label_y = phrase_start + ((phrase_rows - 1) * row_step / 2);
+        let phrase_label_y = phrase_start + ((phrase_rows - 1) as f32 * layout.row_step / 2.0);
         rows.push_str(&format!(
-            r#"<text x="16" y="{phrase_label_y}" class="phrase">{}</text>
+            r#"<text x="{phrase_x:.1}" y="{phrase_label_y:.1}" class="phrase">{}</text>
 "#,
             encode_text(&phrase.name),
+            phrase_x = layout.phrase_x,
         ));
 
         for figure in &phrase.figures {
             let (beats, text) = split_beats(figure);
             rows.push_str(&format!(
-                r#"<text x="68" y="{y}" class="beats">{}</text>
-<text x="104" y="{y}" class="figure">{}</text>
+                r#"<text x="{beats_x:.1}" y="{y:.1}" class="beats">{}</text>
+<text x="{figure_x:.1}" y="{y:.1}" class="figure">{}</text>
 "#,
                 encode_text(&beats.unwrap_or_default()),
                 encode_text(&neutralize_terms(text)),
+                beats_x = layout.beats_x,
+                figure_x = layout.figure_x,
             ));
-            y += row_step;
+            y += layout.row_step;
         }
         if phrase_index + 1 < dance.phrases.len() {
-            let rule_y = y - 8;
+            let rule_y = y - (layout.phrase_gap / 2.0) - 2.0;
             phrase_rules.push_str(&format!(
-                r#"<path class="phrase-rule" d="M16 {rule_y} H484"/>
-"#
+                r#"<path class="phrase-rule" d="M{left_rule_x:.1} {rule_y:.1} H484"/>
+"#,
+                left_rule_x = layout.left_rule_x,
             ));
-            y += phrase_gap;
+            y += layout.phrase_gap;
         }
     }
 
     let mut notes = String::new();
     if !dance.calling_notes.is_empty() {
         notes.push_str(&format!(
-            r#"<text x="24" y="{y}" class="notes-label">Notes</text>"#
+            r#"<text x="{notes_x:.1}" y="{y:.1}" class="notes-label">Notes</text>"#,
+            notes_x = layout.notes_x,
         ));
-        y += 20;
+        y += layout.row_step;
         for note in &dance.calling_notes {
             notes.push_str(&format!(
-                r#"<text x="24" y="{y}" class="notes">{}</text>"#,
-                encode_text(&neutralize_terms(note))
+                r#"<text x="{notes_x:.1}" y="{y:.1}" class="notes">{}</text>"#,
+                encode_text(&neutralize_terms(note)),
+                notes_x = layout.notes_x,
             ));
-            y += 18;
+            y += layout.row_step;
         }
     }
 
@@ -392,29 +413,88 @@ fn render_svg(dance: &Dance) -> String {
     .paper {{ fill: #fffdf5; }}
     .phrase-rule {{ stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }}
     .top-rule {{ stroke: #b64545; stroke-width: 2; }}
-    text {{ fill: #1d2528; font-family: "Avenir Next", "Segoe UI", Arial, sans-serif; }}
+    text {{ fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }}
     .title {{ font-size: 26px; font-weight: 700; }}
     .authors {{ font-size: 14px; }}
     .meta {{ font-size: 12px; text-anchor: end; }}
-    .phrase {{ font-size: 18px; font-weight: 700; dominant-baseline: middle; }}
-    .beats {{ font-size: 13px; font-weight: 700; text-anchor: end; }}
-    .figure {{ font-size: 17px; }}
-    .notes-label {{ font-size: 13px; font-weight: 700; }}
-    .notes {{ font-size: 13px; }}
+    .phrase {{ font-size: {phrase_font_size:.1}px; font-weight: 700; dominant-baseline: middle; }}
+    .beats {{ font-size: {beats_font_size:.1}px; font-weight: 700; text-anchor: end; }}
+    .figure {{ font-size: {figure_font_size:.1}px; }}
+    .notes-label {{ font-size: {notes_font_size:.1}px; font-weight: 700; }}
+    .notes {{ font-size: {notes_font_size:.1}px; }}
   </style>
   <rect class="paper" x="0" y="0" width="500" height="300"/>
-  <g transform="translate(0 8)">
+  <g transform="translate(4 8)">
     <path class="top-rule" d="M0 48 H500"/>
     {phrase_rules}
     <text x="24" y="36" class="title">{title}</text>
-    <text x="476" y="22" class="meta">{meta}</text>
-    <text x="476" y="40" class="meta">{authors}</text>
+    <text x="472" y="22" class="meta">{meta}</text>
+    <text x="472" y="40" class="meta">{authors}</text>
     {rows}
     {notes}
   </g>
 </svg>
-"##
+"##,
+        phrase_font_size = layout.phrase_font_size,
+        beats_font_size = layout.beats_font_size,
+        figure_font_size = layout.figure_font_size,
+        notes_font_size = layout.notes_font_size,
     )
+}
+
+fn card_layout(dance: &Dance) -> CardLayout {
+    let figure_rows: usize = dance
+        .phrases
+        .iter()
+        .map(|phrase| phrase.figures.len().max(1))
+        .sum();
+    let phrase_gaps = dance.phrases.len().saturating_sub(1);
+    let note_rows = if dance.calling_notes.is_empty() {
+        0
+    } else {
+        1 + dance.calling_notes.len()
+    };
+
+    let body_start = 66.0;
+    let body_max_baseline = 276.0;
+    let default_row_step = 21.0;
+    let default_phrase_gap = 10.0;
+    let content_rows = figure_rows + note_rows;
+    let default_height = content_height(
+        content_rows,
+        phrase_gaps,
+        default_row_step,
+        default_phrase_gap,
+    );
+    let available_height = body_max_baseline - body_start;
+    let scale = if default_height <= available_height {
+        1.0
+    } else {
+        available_height / default_height
+    };
+
+    CardLayout {
+        phrase_x: 16.0,
+        beats_x: 68.0,
+        figure_x: 104.0,
+        left_rule_x: 16.0,
+        notes_x: 24.0,
+        body_start,
+        row_step: default_row_step * scale,
+        phrase_gap: default_phrase_gap * scale,
+        phrase_font_size: 18.0 * scale,
+        beats_font_size: 13.0 * scale,
+        figure_font_size: 17.0 * scale,
+        notes_font_size: 13.0 * scale,
+    }
+}
+
+fn content_height(content_rows: usize, phrase_gaps: usize, row_step: f32, phrase_gap: f32) -> f32 {
+    if content_rows == 0 {
+        0.0
+    } else {
+        (content_rows - 1) as f32 * row_step + phrase_gaps as f32 * phrase_gap
+    }
 }
 
 fn dance_meta(dance: &Dance) -> String {
