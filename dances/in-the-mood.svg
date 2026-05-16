@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>In the Mood</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=14486</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      source="the-callers-box"
+      source-id="14486"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=14486"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=14486&amp;format=JSON" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", "Segoe UI", Arial, sans-serif; }
+    .title { font-size: 26px; font-weight: 700; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 18px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17px; }
+    .notes-label { font-size: 13px; font-weight: 700; }
+    .notes { font-size: 13px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(0 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16 112 H484"/>
+<path class="phrase-rule" d="M16 164 H484"/>
+<path class="phrase-rule" d="M16 216 H484"/>
+
+    <text x="24" y="36" class="title">In the Mood</text>
+    <text x="476" y="22" class="meta">Duple Minor - Becket | Single progression | CCW</text>
+    <text x="476" y="40" class="meta">By Lindsey Dono, Julian Blechner, Yoyo Zhou</text>
+    <text x="16" y="88" class="phrase">A1</text>
+<text x="68" y="78" class="beats">6</text>
+<text x="104" y="78" class="figure">Circle left 3/4</text>
+<text x="68" y="99" class="beats">10</text>
+<text x="104" y="99" class="figure">Neighbor swing</text>
+<text x="16" y="140" class="phrase">A2</text>
+<text x="68" y="130" class="beats">8</text>
+<text x="104" y="130" class="figure">Right and left through with neighbor</text>
+<text x="68" y="151" class="beats">8</text>
+<text x="104" y="151" class="figure">Mad robin counterclockwise around neighbor</text>
+<text x="16" y="192" class="phrase">B1</text>
+<text x="68" y="182" class="beats">8</text>
+<text x="104" y="182" class="figure">Partner poussette clockwise 1/2 [around N2]</text>
+<text x="68" y="203" class="beats">8</text>
+<text x="104" y="203" class="figure">Mad robin clockwise around neighbor N2</text>
+<text x="16" y="255" class="phrase">B2</text>
+<text x="68" y="234" class="beats">4</text>
+<text x="104" y="234" class="figure">Larks pass left</text>
+<text x="68" y="255" class="beats">4</text>
+<text x="104" y="255" class="figure">Partner right shoulder round</text>
+<text x="68" y="276" class="beats">8</text>
+<text x="104" y="276" class="figure">Partner swing</text>
+
+    
+  </g>
+</svg>
