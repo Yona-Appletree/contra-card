@@ -52,6 +52,31 @@ Use `--yes` to skip the overwrite prompt:
 cargo run -- regen dances/in-the-mood.svg --yes
 ```
 
+List configured printers:
+
+```sh
+cargo run -- printers
+```
+
+Print a card using your custom paper size named `3x5`:
+
+```sh
+cargo run -- print dances/in-the-mood.svg
+```
+
+Inspect the exact `lp` command before printing:
+
+```sh
+cargo run -- print dances/in-the-mood.svg --dry-run
+```
+
+Select a printer or override options:
+
+```sh
+cargo run -- print dances/in-the-mood.svg --printer HP_Color_LaserJet_M255dw__ADA71C_
+cargo run -- print dances/in-the-mood.svg --media 3x5 --copies 2
+```
+
 ## Caller’s Box Fetching
 
 Search uses the normal HTML endpoint:

@@ -12,6 +12,7 @@ use reqwest::header::{ACCEPT, ACCEPT_LANGUAGE, CACHE_CONTROL, PRAGMA};
 use serde::Deserialize;
 
 mod highlight;
+mod print;
 
 const BASE_URL: &str = "https://www.ibiblio.org/contradance/thecallersbox";
 const BROWSER_USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) contra-card/0.1";
@@ -69,6 +70,8 @@ fn main() -> Result<()> {
         None => interactive_loop(),
         Some("add") => add_command(&args[1..]),
         Some("regen") => regen_command(&args[1..]),
+        Some("print") => print_command(&args[1..]),
+        Some("printers") => print::list_printers(),
         Some("help" | "-h" | "--help") => {
             print_help();
             Ok(())
@@ -142,6 +145,11 @@ fn regen_command(args: &[String]) -> Result<()> {
     Ok(())
 }
 
+fn print_command(args: &[String]) -> Result<()> {
+    let options = print::parse_print_options(args)?;
+    print::print_svg(&options)
+}
+
 fn print_help() {
     println!(
         r#"Contra card maker
@@ -150,9 +158,13 @@ Usage:
   contra-card                 Interactive add flow
   contra-card add [QUERY]     Search/fetch and write dances/<dance-name>.svg
   contra-card regen <SVG>     Re-fetch using embedded SVG source metadata
+  contra-card printers        List configured CUPS printers
+  contra-card print <SVG>     Print an SVG card using media=3x5
 
 Notes:
   QUERY can be a dance title, Caller’s Box URL, or raw Caller’s Box ID.
+  Print defaults to your custom paper size named 3x5 and landscape orientation.
+  Use `contra-card print <SVG> --dry-run` to inspect the lp command.
   `cargo run --` can be used in front of these commands during development.
 "#
     );
