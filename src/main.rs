@@ -11,6 +11,8 @@ use reqwest::blocking::Client;
 use reqwest::header::{ACCEPT, ACCEPT_LANGUAGE, CACHE_CONTROL, PRAGMA};
 use serde::Deserialize;
 
+mod highlight;
+
 const BASE_URL: &str = "https://www.ibiblio.org/contradance/thecallersbox";
 const BROWSER_USER_AGENT: &str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) contra-card/0.1";
 
@@ -333,7 +335,7 @@ fn render_svg(dance: &Dance) -> String {
     let authors_text = format!("By {}", dance.authors.join(", "));
     let authors = encode_text(&authors_text);
     let meta_text = dance_meta(dance);
-    let meta = encode_text(&meta_text);
+    let meta = render_header_meta(&meta_text);
     let source_url = format!("{BASE_URL}/dance.php?id={}", dance.id);
     let source = encode_double_quoted_attribute(&source_url);
     let source_id = encode_double_quoted_attribute(&dance.id);
@@ -357,19 +359,19 @@ fn render_svg(dance: &Dance) -> String {
 
         for figure in &phrase.figures {
             let (beats, text) = split_beats(figure);
+            let figure_spans = render_figure_spans(&neutralize_terms(text));
             rows.push_str(&format!(
                 r#"<text x="{beats_x:.1}" y="{y:.1}" class="beats">{}</text>
-<text x="{figure_x:.1}" y="{y:.1}" class="figure">{}</text>
+<text x="{figure_x:.1}" y="{y:.1}" class="figure" xml:space="preserve">{figure_spans}</text>
 "#,
                 encode_text(&beats.unwrap_or_default()),
-                encode_text(&neutralize_terms(text)),
                 beats_x = layout.beats_x,
                 figure_x = layout.figure_x,
             ));
             y += layout.row_step;
         }
         if phrase_index + 1 < dance.phrases.len() {
-            let rule_y = y - (layout.phrase_gap / 2.0) - 2.0;
+            let rule_y = y - (layout.phrase_gap / 2.0) - 4.0;
             phrase_rules.push_str(&format!(
                 r#"<path class="phrase-rule" d="M{left_rule_x:.1} {rule_y:.1} H484"/>
 "#,
@@ -420,6 +422,10 @@ fn render_svg(dance: &Dance) -> String {
     .phrase {{ font-size: {phrase_font_size:.1}px; font-weight: 700; dominant-baseline: middle; }}
     .beats {{ font-size: {beats_font_size:.1}px; font-weight: 700; text-anchor: end; }}
     .figure {{ font-size: {figure_font_size:.1}px; }}
+    .meta-strong {{ font-weight: 700; }}
+    .move {{ fill: #7a2e2e; font-weight: 600; }}
+    .role {{ font-weight: 600; }}
+    .amount {{ fill: #4d6470; font-weight: 600; }}
     .notes-label {{ font-size: {notes_font_size:.1}px; font-weight: 700; }}
     .notes {{ font-size: {notes_font_size:.1}px; }}
   </style>
@@ -427,7 +433,7 @@ fn render_svg(dance: &Dance) -> String {
   <g transform="translate(4 8)">
     <path class="top-rule" d="M0 48 H500"/>
     {phrase_rules}
-    <text x="24" y="36" class="title">{title}</text>
+    <text x="16" y="36" class="title">{title}</text>
     <text x="472" y="22" class="meta">{meta}</text>
     <text x="472" y="40" class="meta">{authors}</text>
     {rows}
@@ -440,6 +446,33 @@ fn render_svg(dance: &Dance) -> String {
         figure_font_size = layout.figure_font_size,
         notes_font_size = layout.notes_font_size,
     )
+}
+
+fn render_figure_spans(text: &str) -> String {
+    highlight::highlight(text)
+        .into_iter()
+        .map(|span| {
+            format!(
+                r#"<tspan class="{}">{}</tspan>"#,
+                span.kind.class_name(),
+                encode_text(span.text)
+            )
+        })
+        .collect()
+}
+
+fn render_header_meta(text: &str) -> String {
+    text.split("Becket")
+        .enumerate()
+        .map(|(i, part)| {
+            let mut out = String::new();
+            if i > 0 {
+                out.push_str(r#"<tspan class="meta-strong">Becket</tspan>"#);
+            }
+            out.push_str(&encode_text(part));
+            out
+        })
+        .collect()
 }
 
 fn card_layout(dance: &Dance) -> CardLayout {
