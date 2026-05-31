@@ -846,7 +846,7 @@ fn render_svg(dance: &CardDance) -> String {
             }
         }
         if phrase_index + 1 < dance.phrases.len() {
-            let rule_y = y - (layout.phrase_gap / 2.0) - 4.0;
+            let rule_y = y - (layout.phrase_gap / 2.0) - 8.0;
             phrase_rules.push_str(&format!(
                 r#"<path class="phrase-rule" d="M{left_rule_x:.1} {rule_y:.1} H484"/>
 "#,
@@ -907,7 +907,7 @@ fn render_svg(dance: &CardDance) -> String {
     .top-rule {{ stroke: #b64545; stroke-width: 2; }}
     text {{ fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }}
     .title {{ font-size: {title_font_size:.1}px; font-weight: 600; }}
-    .badge-text {{ font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }}
+    .badge-text {{ font-size: 9.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }}
     .authors {{ font-size: 14px; }}
     .meta {{ font-size: 12px; text-anchor: end; }}
     .phrase {{ font-size: {phrase_font_size:.1}px; font-weight: 700; dominant-baseline: middle; }}
@@ -956,10 +956,10 @@ fn render_move_badges(dance: &CardDance) -> String {
     for tag in tags {
         let width = badge_width(tag.label);
         let y = 12.0;
-        let text_y = y + 6.1;
+        let text_y = y + 7.1;
         let label = encode_text(tag.label);
         out.push_str(&format!(
-            r##"<rect x="{x:.1}" y="{y:.1}" width="{width:.1}" height="12.0" rx="6.0" fill="{bg}"/>
+            r##"<rect x="{x:.1}" y="{y:.1}" width="{width:.1}" height="14.0" rx="7.0" fill="{bg}"/>
 <text x="{text_x:.1}" y="{text_y:.1}" class="badge-text" style="fill: {fg};">{label}</text>
 "##,
             bg = tag.bg,
@@ -972,7 +972,7 @@ fn render_move_badges(dance: &CardDance) -> String {
 }
 
 fn badge_width(label: &str) -> f32 {
-    (text_width(label, 8.0, 0.54) + 11.0).max(23.0)
+    (text_width(label, 9.0, 0.54) + 12.0).max(25.0)
 }
 
 fn render_figure_spans(text: &str) -> String {
@@ -1025,7 +1025,7 @@ fn card_layout(dance: &CardDance) -> CardLayout {
     let body_start = 66.0;
     let body_max_baseline = 268.0;
     let default_row_step = 21.0;
-    let default_phrase_gap = 10.0;
+    let default_phrase_gap = 7.0;
     let content_rows = figure_rows + note_rows;
     let default_height = content_height(
         content_rows,
