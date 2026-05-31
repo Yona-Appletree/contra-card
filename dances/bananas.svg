@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
-  <title>Hay in the Barn</title>
-  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10482</desc>
+  <title>Bananas</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=16</desc>
   <metadata>
     <contra-card xmlns="https://github.com/yona/contra-card"
       version="0.1"
-      dance-name="Hay in the Barn"
-      authors="Chart Guthrie"
-      formation="Hands 4 - Improper"
+      dance-name="Bananas"
+      authors="Becky Hill"
+      formation="Hands 4 - Becket | CCW"
       source="the-callers-box"
-      source-id="10482"
-      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10482"
-      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10482&amp;format=JSON" />
+      source-id="16"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=16"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=16&amp;format=JSON" />
   </metadata>
   <style>
     .paper { fill: #fffdf5; }
@@ -43,20 +43,26 @@
 <text x="44.6" y="18.1" class="badge-text" style="fill: #442600;">robins chain</text>
 <rect x="77.2" y="12.0" width="24.0" height="12.0" rx="6.0" fill="#8fd19e"/>
 <text x="89.2" y="18.1" class="badge-text" style="fill: #14351f;">hey</text>
+<rect x="105.2" y="12.0" width="39.8" height="12.0" rx="6.0" fill="#c2a6d6"/>
+<text x="125.1" y="18.1" class="badge-text" style="fill: #382742;">shadow</text>
+<rect x="149.0" y="12.0" width="42.0" height="12.0" rx="6.0" fill="#d8a7bd"/>
+<text x="170.0" y="18.1" class="badge-text" style="fill: #4a2c3a;">diagonal</text>
+<rect x="195.0" y="12.0" width="81.1" height="12.0" rx="6.0" fill="#9bb5dd"/>
+<text x="235.6" y="18.1" class="badge-text" style="fill: #213654;">right left through</text>
 
-    <text x="16" y="43.0" class="title">Hay in the Barn</text>
-    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
-    <text x="472" y="40" class="meta">By Chart Guthrie</text>
+    <text x="16" y="43.0" class="title">Bananas</text>
+    <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan> | CCW</text>
+    <text x="472" y="40" class="meta">By Becky Hill</text>
     <text x="16.0" y="76.5" class="phrase">A1</text>
-<text x="68.0" y="66.0" class="beats">4</text>
-<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">balance</tspan></text>
-<text x="68.0" y="87.0" class="beats">12</text>
-<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="68.0" y="66.0" class="beats">8</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> 1</tspan></text>
+<text x="68.0" y="87.0" class="beats">8</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan><tspan class="plain"> to </tspan><tspan class="role">Neighbor</tspan></text>
 <text x="16.0" y="128.5" class="phrase">A2</text>
 <text x="68.0" y="118.0" class="beats">8</text>
-<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan><tspan class="plain"> to </tspan><tspan class="role">Partner</tspan></text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="plain">On left diagonal, </tspan><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan><tspan class="plain"> to </tspan><tspan class="role">shadow</tspan></text>
 <text x="68.0" y="139.0" class="beats">8</text>
-<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Hey</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan><tspan class="plain"> (RR;NL;LR)</tspan></text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Hey</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan><tspan class="plain"> (RR;N2L;LR;sl~)</tspan></text>
 <text x="16.0" y="180.5" class="phrase">B1</text>
 <text x="68.0" y="170.0" class="beats">4</text>
 <text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">balance</tspan></text>
@@ -64,9 +70,9 @@
 <text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
 <text x="16.0" y="232.5" class="phrase">B2</text>
 <text x="68.0" y="222.0" class="beats">8</text>
-<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan><tspan class="plain"> to </tspan><tspan class="role">Neighbor</tspan></text>
+<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="plain">In </tspan><tspan class="move">long lines</tspan><tspan class="plain">, go forward and back</tspan></text>
 <text x="68.0" y="243.0" class="beats">8</text>
-<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Hey</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan><tspan class="plain"> (RR;PL;LR;NL~)</tspan></text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Right and left through</tspan><tspan class="plain"> with </tspan><tspan class="role">Partner</tspan></text>
 
     
   </g>

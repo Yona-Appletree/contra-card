@@ -18,7 +18,8 @@
     .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
     .top-rule { stroke: #b64545; stroke-width: 2; }
     text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
-    .title { font-size: 26.0px; font-weight: 700; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
     .authors { font-size: 14px; }
     .meta { font-size: 12px; text-anchor: end; }
     .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
@@ -38,7 +39,14 @@
 <path class="phrase-rule" d="M16.0 172.0 H484"/>
 <path class="phrase-rule" d="M16.0 224.0 H484"/>
 
-    <text x="16" y="36" class="title">Green Lake Twirl</text>
+    <rect x="16.0" y="12.0" width="29.1" height="12.0" rx="6.0" fill="#a9bedc"/>
+<text x="30.5" y="18.1" class="badge-text" style="fill: #263447;">slice</text>
+<rect x="49.1" y="12.0" width="43.8" height="12.0" rx="6.0" fill="#d9ca75"/>
+<text x="71.0" y="18.1" class="badge-text" style="fill: #372e14;">do-si-do</text>
+<rect x="96.9" y="12.0" width="31.2" height="12.0" rx="6.0" fill="#8cc8d8"/>
+<text x="112.5" y="18.1" class="badge-text" style="fill: #183845;">wave</text>
+
+    <text x="16" y="43.0" class="title">Green Lake Twirl</text>
     <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan></text>
     <text x="472" y="40" class="meta">By Isaac Banner</text>
     <text x="16.0" y="87.0" class="phrase">A1</text>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Show of Hands I</title>
+  <desc>Contra dance calling card generated from https://contradb.com/dances/3087</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="Show of Hands I"
+      authors="Melanie Axel-Lute"
+      formation="Hands 4 - Improper"
+      source="contradb"
+      source-id="3087"
+      source-url="https://contradb.com/dances/3087"
+      source-json-url="https://contradb.com/dances/3087" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13.0px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17.0px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 13.0px; font-weight: 700; }
+    .notes { font-size: 13.0px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 99.0 H484"/>
+<path class="phrase-rule" d="M16.0 130.0 H484"/>
+<path class="phrase-rule" d="M16.0 182.0 H484"/>
+
+    <rect x="16.0" y="12.0" width="28.3" height="12.0" rx="6.0" fill="#88d0c0"/>
+<text x="30.1" y="18.1" class="badge-text" style="fill: #17392f;">star</text>
+
+    <text x="16" y="43.0" class="title">Show of Hands I</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
+    <text x="472" y="40" class="meta">By Melanie Axel-Lute</text>
+    <text x="16.0" y="76.5" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">8</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">allemande right</tspan><tspan class="plain"> 1¼</tspan></text>
+<text x="68.0" y="87.0" class="beats">8</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> 1½</tspan></text>
+<text x="16.0" y="118.0" class="phrase">A2</text>
+<text x="68.0" y="118.0" class="beats">16</text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="move">Partners balance &amp; swing</tspan></text>
+<text x="16.0" y="159.5" class="phrase">B1</text>
+<text x="68.0" y="149.0" class="beats">8</text>
+<text x="104.0" y="149.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> 3 places</tspan></text>
+<text x="68.0" y="170.0" class="beats">8</text>
+<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="211.5" class="phrase">B2</text>
+<text x="68.0" y="201.0" class="beats">8</text>
+<text x="104.0" y="201.0" class="figure" xml:space="preserve"><tspan class="move">Long lines</tspan><tspan class="plain"> forward &amp; back</tspan></text>
+<text x="68.0" y="222.0" class="beats">8</text>
+<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="move">Star left</tspan><tspan class="plain"> 4 places ⁋</tspan></text>
+
+    
+  </g>
+</svg>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Salmonella Evening</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10708</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="Salmonella Evening"
+      authors="Steve Zakon-Anderson, Louie Cromartie"
+      formation="Hands 4 - Improper"
+      source="the-callers-box"
+      source-id="10708"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10708"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=10708&amp;format=JSON" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 13.9px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 10.1px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 13.2px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 10.1px; font-weight: 700; }
+    .notes { font-size: 10.1px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 90.6 H484"/>
+<path class="phrase-rule" d="M16.0 130.9 H484"/>
+<path class="phrase-rule" d="M16.0 203.6 H484"/>
+
+    <rect x="16.0" y="12.0" width="50.7" height="12.0" rx="6.0" fill="#efa0a8"/>
+<text x="41.3" y="18.1" class="badge-text" style="fill: #5b1e28;">petronella</text>
+
+    <text x="16" y="43.0" class="title">Salmonella Evening</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
+    <text x="472" y="40" class="meta">By Steve Zakon-Anderson, Louie Cromartie</text>
+    <text x="16.0" y="74.1" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">8</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">allemande right</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">3/4</tspan></text>
+<text x="68.0" y="82.3" class="beats">8</text>
+<text x="104.0" y="82.3" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> </tspan><tspan class="amount">1 &amp; 1/2</tspan></text>
+<text x="16.0" y="114.4" class="phrase">A2</text>
+<text x="68.0" y="106.2" class="beats">8</text>
+<text x="104.0" y="106.2" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">right shoulder round</tspan></text>
+<text x="68.0" y="122.5" class="beats">8</text>
+<text x="104.0" y="122.5" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="170.9" class="phrase">B1</text>
+<text x="68.0" y="146.5" class="beats">4</text>
+<text x="104.0" y="146.5" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> ring</tspan></text>
+<text x="68.0" y="162.7" class="beats">4</text>
+<text x="104.0" y="162.7" class="figure" xml:space="preserve"><tspan class="move">Petronella</tspan><tspan class="plain"> turn</tspan></text>
+<text x="68.0" y="179.0" class="beats">4</text>
+<text x="104.0" y="179.0" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> ring</tspan></text>
+<text x="68.0" y="195.2" class="beats">4</text>
+<text x="104.0" y="195.2" class="figure" xml:space="preserve"><tspan class="move">Petronella</tspan><tspan class="plain"> turn</tspan></text>
+<text x="16.0" y="243.6" class="phrase">B2</text>
+<text x="68.0" y="219.2" class="beats">4</text>
+<text x="104.0" y="219.2" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> ring</tspan></text>
+<text x="68.0" y="235.5" class="beats">4</text>
+<text x="104.0" y="235.5" class="figure" xml:space="preserve"><tspan class="move">Petronella</tspan><tspan class="plain"> turn</tspan></text>
+<text x="68.0" y="251.7" class="beats">4</text>
+<text x="104.0" y="251.7" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> ring</tspan></text>
+<text x="68.0" y="268.0" class="beats">4</text>
+<text x="104.0" y="268.0" class="figure" xml:space="preserve"><tspan class="move">Pass through</tspan><tspan class="plain"> along (NR)</tspan></text>
+
+    
+  </g>
+</svg>

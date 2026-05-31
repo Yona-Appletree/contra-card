@@ -18,7 +18,8 @@
     .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
     .top-rule { stroke: #b64545; stroke-width: 2; }
     text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
-    .title { font-size: 26px; font-weight: 700; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
     .authors { font-size: 14px; }
     .meta { font-size: 12px; text-anchor: end; }
     .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
@@ -38,7 +39,14 @@
 <path class="phrase-rule" d="M16.0 151.0 H484"/>
 <path class="phrase-rule" d="M16.0 203.0 H484"/>
 
-    <text x="16" y="36" class="title">In the Mood</text>
+    <rect x="16.0" y="12.0" width="49.9" height="12.0" rx="6.0" fill="#d8b08a"/>
+<text x="40.9" y="18.1" class="badge-text" style="fill: #4a2b16;">poussette</text>
+<rect x="69.9" y="12.0" width="48.9" height="12.0" rx="6.0" fill="#e0a0cd"/>
+<text x="94.3" y="18.1" class="badge-text" style="fill: #5b254c;">mad robin</text>
+<rect x="122.8" y="12.0" width="81.1" height="12.0" rx="6.0" fill="#9bb5dd"/>
+<text x="163.3" y="18.1" class="badge-text" style="fill: #213654;">right left through</text>
+
+    <text x="16" y="43.0" class="title">In the Mood</text>
     <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan> | CCW</text>
     <text x="472" y="40" class="meta">By Lindsey Dono, Julian Blechner, Yoyo Zhou</text>
     <text x="16.0" y="76.5" class="phrase">A1</text>
@@ -48,14 +56,14 @@
 <text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
 <text x="16.0" y="128.5" class="phrase">A2</text>
 <text x="68.0" y="118.0" class="beats">8</text>
-<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="move">Right and left through</tspan><tspan class="plain"> with </tspan><tspan class="role">neighbor</tspan></text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="move">Right and left through</tspan><tspan class="plain"> with </tspan><tspan class="role">Neighbor</tspan></text>
 <text x="68.0" y="139.0" class="beats">8</text>
-<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Mad robin</tspan><tspan class="plain"> </tspan><tspan class="amount">counterclockwise</tspan><tspan class="plain"> around </tspan><tspan class="role">neighbor</tspan></text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Mad Robin</tspan><tspan class="plain"> </tspan><tspan class="amount">counterclockwise</tspan><tspan class="plain"> around </tspan><tspan class="role">Neighbor</tspan></text>
 <text x="16.0" y="180.5" class="phrase">B1</text>
 <text x="68.0" y="170.0" class="beats">8</text>
-<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">poussette</tspan><tspan class="plain"> </tspan><tspan class="amount">clockwise</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan><tspan class="plain"> [around N2]</tspan></text>
+<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">poussette</tspan><tspan class="plain"> </tspan><tspan class="amount">clockwise</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan><tspan class="plain"> [around n2]</tspan></text>
 <text x="68.0" y="191.0" class="beats">8</text>
-<text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="move">Mad robin</tspan><tspan class="plain"> </tspan><tspan class="amount">clockwise</tspan><tspan class="plain"> around </tspan><tspan class="role">neighbor</tspan><tspan class="plain"> N2</tspan></text>
+<text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="move">Mad Robin</tspan><tspan class="plain"> </tspan><tspan class="amount">clockwise</tspan><tspan class="plain"> around </tspan><tspan class="role">Neighbor</tspan><tspan class="plain"> n2</tspan></text>
 <text x="16.0" y="243.0" class="phrase">B2</text>
 <text x="68.0" y="222.0" class="beats">4</text>
 <text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> </tspan><tspan class="move">pass left</tspan></text>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
-  <title>Box the Cat</title>
-  <desc>Contra dance calling card generated from https://contradb.com/dances/1542</desc>
+  <title>Thursday Night Special #1</title>
+  <desc>Contra dance calling card generated from https://contradb.com/dances/133</desc>
   <metadata>
     <contra-card xmlns="https://github.com/yona/contra-card"
       version="0.1"
-      dance-name="Box the Cat"
-      authors="Lisa Greenleaf"
+      dance-name="Thursday Night Special #1"
+      authors="Larry Jennings"
       formation="Hands 4 - Improper"
       source="contradb"
-      source-id="1542"
-      source-url="https://contradb.com/dances/1542"
-      source-json-url="https://contradb.com/dances/1542" />
+      source-id="133"
+      source-url="https://contradb.com/dances/133"
+      source-json-url="https://contradb.com/dances/133" />
   </metadata>
   <style>
     .paper { fill: #fffdf5; }
@@ -35,38 +35,38 @@
   <rect class="paper" x="0" y="0" width="500" height="300"/>
   <g transform="translate(4 8)">
     <path class="top-rule" d="M0 48 H500"/>
-    <path class="phrase-rule" d="M16.0 120.0 H484"/>
+    <path class="phrase-rule" d="M16.0 99.0 H484"/>
 <path class="phrase-rule" d="M16.0 151.0 H484"/>
 <path class="phrase-rule" d="M16.0 203.0 H484"/>
 
     <rect x="16.0" y="12.0" width="57.2" height="12.0" rx="6.0" fill="#f4c56b"/>
 <text x="44.6" y="18.1" class="badge-text" style="fill: #442600;">robins chain</text>
-<rect x="77.2" y="12.0" width="28.3" height="12.0" rx="6.0" fill="#88d0c0"/>
-<text x="91.4" y="18.1" class="badge-text" style="fill: #17392f;">star</text>
+<rect x="77.2" y="12.0" width="62.4" height="12.0" rx="6.0" fill="#86c5e7"/>
+<text x="108.4" y="18.1" class="badge-text" style="fill: #12324a;">down the hall</text>
 
-    <text x="16" y="43.0" class="title">Box the Cat</text>
+    <text x="16" y="43.0" class="title">Thursday Night Special #1</text>
     <text x="472" y="22" class="meta">Hands 4 - Improper</text>
-    <text x="472" y="40" class="meta">By Lisa Greenleaf</text>
-    <text x="16.0" y="87.0" class="phrase">A1</text>
-<text x="68.0" y="66.0" class="beats">8</text>
-<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">right hand balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">box the gnat</tspan></text>
-<text x="68.0" y="87.0" class="beats">2</text>
-<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">pull by</tspan><tspan class="plain"> right</tspan></text>
-<text x="68.0" y="108.0" class="beats">6</text>
-<text x="104.0" y="108.0" class="figure" xml:space="preserve"><tspan class="plain">Previous </tspan><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> once</tspan></text>
-<text x="16.0" y="139.0" class="phrase">A2</text>
-<text x="68.0" y="139.0" class="beats">16</text>
-<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Neighbors balance &amp; swing</tspan></text>
+    <text x="472" y="40" class="meta">By Larry Jennings</text>
+    <text x="16.0" y="76.5" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">16</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="move">Neighbors balance &amp; swing</tspan><tspan class="plain">, end facing down the</tspan></text>
+<text x="68.0" y="87.0" class="beats"></text>
+<text x="120.0" y="87.0" class="figure" xml:space="preserve"><tspan class="plain">hall</tspan></text>
+<text x="16.0" y="128.5" class="phrase">A2</text>
+<text x="68.0" y="118.0" class="beats">8</text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="move">Down the hall</tspan><tspan class="plain"> and </tspan><tspan class="move">turn as a couple</tspan></text>
+<text x="68.0" y="139.0" class="beats">8</text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="move">Up the hall</tspan><tspan class="plain"> and </tspan><tspan class="move">bend into a ring</tspan></text>
 <text x="16.0" y="180.5" class="phrase">B1</text>
-<text x="68.0" y="170.0" class="beats">6</text>
+<text x="68.0" y="170.0" class="beats">8</text>
 <text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> 3 places</tspan></text>
-<text x="68.0" y="191.0" class="beats">10</text>
+<text x="68.0" y="191.0" class="beats">8</text>
 <text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="role">Partners</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
 <text x="16.0" y="232.5" class="phrase">B2</text>
 <text x="68.0" y="222.0" class="beats">8</text>
 <text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan></text>
 <text x="68.0" y="243.0" class="beats">8</text>
-<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Star left</tspan><tspan class="plain"> 4 places ⁋</tspan></text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Long lines</tspan><tspan class="plain"> forward &amp; back - id next </tspan><tspan class="role">Neighbors</tspan><tspan class="plain"> ⁋</tspan></text>
 
     
   </g>

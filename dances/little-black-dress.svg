@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
-  <title>Airpants</title>
-  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577</desc>
+  <title>Little Black Dress</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4321</desc>
   <metadata>
     <contra-card xmlns="https://github.com/yona/contra-card"
       version="0.1"
-      dance-name="Airpants"
-      authors="Lisa Greenleaf"
-      formation="Hands 4 - Improper"
+      dance-name="Little Black Dress"
+      authors="Melanie Axel-Lute"
+      formation="Hands 4 - Improper | Wave of four (NR,WL)"
       source="the-callers-box"
-      source-id="4577"
-      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577"
-      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4577&amp;format=JSON" />
+      source-id="4321"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4321"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=4321&amp;format=JSON" />
   </metadata>
   <style>
     .paper { fill: #fffdf5; }
@@ -41,13 +41,15 @@
 
     <rect x="16.0" y="12.0" width="43.8" height="12.0" rx="6.0" fill="#d9ca75"/>
 <text x="37.9" y="18.1" class="badge-text" style="fill: #372e14;">do-si-do</text>
+<rect x="63.8" y="12.0" width="31.2" height="12.0" rx="6.0" fill="#8cc8d8"/>
+<text x="79.4" y="18.1" class="badge-text" style="fill: #183845;">wave</text>
 
-    <text x="16" y="43.0" class="title">Airpants</text>
-    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
-    <text x="472" y="40" class="meta">By Lisa Greenleaf</text>
+    <text x="16" y="43.0" class="title">Little Black Dress</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper | Wave of four (NR,WL)</text>
+    <text x="472" y="40" class="meta">By Melanie Axel-Lute</text>
     <text x="16.0" y="76.5" class="phrase">A1</text>
 <text x="68.0" y="66.0" class="beats">4</text>
-<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">balance</tspan></text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="move">Balance wave</tspan><tspan class="plain"> of four (NR,RL)</tspan></text>
 <text x="68.0" y="87.0" class="beats">12</text>
 <text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
 <text x="16.0" y="128.5" class="phrase">A2</text>
@@ -56,15 +58,17 @@
 <text x="68.0" y="139.0" class="beats">8</text>
 <text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">allemande right</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">1/2</tspan></text>
 <text x="16.0" y="180.5" class="phrase">B1</text>
-<text x="68.0" y="170.0" class="beats">4</text>
-<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">balance</tspan></text>
-<text x="68.0" y="191.0" class="beats">12</text>
+<text x="68.0" y="170.0" class="beats">8</text>
+<text x="104.0" y="170.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">do-si-do</tspan></text>
+<text x="68.0" y="191.0" class="beats">8</text>
 <text x="104.0" y="191.0" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
-<text x="16.0" y="232.5" class="phrase">B2</text>
-<text x="68.0" y="222.0" class="beats">6</text>
-<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> </tspan><tspan class="amount">3/4</tspan></text>
-<text x="68.0" y="243.0" class="beats">10</text>
-<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">do-si-do</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">1/2</tspan></text>
+<text x="16.0" y="243.0" class="phrase">B2</text>
+<text x="68.0" y="222.0" class="beats">8</text>
+<text x="104.0" y="222.0" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> </tspan><tspan class="amount">3/4</tspan><tspan class="plain">; form wave of four</tspan></text>
+<text x="68.0" y="243.0" class="beats">4</text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="move">Balance wave</tspan><tspan class="plain"> of four (NR,RL)</tspan></text>
+<text x="68.0" y="264.0" class="beats">4</text>
+<text x="104.0" y="264.0" class="figure" xml:space="preserve"><tspan class="plain">Walk forward; form wave of four with n2</tspan></text>
 
     
   </g>

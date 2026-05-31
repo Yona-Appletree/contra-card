@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Treasure of the Sierra Madre</title>
+  <desc>Contra dance calling card generated from https://contradb.com/dances/3280</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="Treasure of the Sierra Madre"
+      authors="James Hutson"
+      formation="Hands 4 - Improper"
+      source="contradb"
+      source-id="3280"
+      source-url="https://contradb.com/dances/3280"
+      source-json-url="https://contradb.com/dances/3280" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 22.5px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13.0px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17.0px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 13.0px; font-weight: 700; }
+    .notes { font-size: 13.0px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 99.0 H484"/>
+<path class="phrase-rule" d="M16.0 193.0 H484"/>
+<path class="phrase-rule" d="M16.0 224.0 H484"/>
+
+    <rect x="16.0" y="12.0" width="57.2" height="12.0" rx="6.0" fill="#f4c56b"/>
+<text x="44.6" y="18.1" class="badge-text" style="fill: #442600;">robins chain</text>
+<rect x="77.2" y="12.0" width="24.0" height="12.0" rx="6.0" fill="#8fd19e"/>
+<text x="89.2" y="18.1" class="badge-text" style="fill: #14351f;">hey</text>
+<rect x="105.2" y="12.0" width="28.3" height="12.0" rx="6.0" fill="#88d0c0"/>
+<text x="119.3" y="18.1" class="badge-text" style="fill: #17392f;">star</text>
+
+    <text x="16" y="43.0" class="title">Treasure of the Sierra Madre</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper</text>
+    <text x="472" y="40" class="meta">By James Hutson</text>
+    <text x="16.0" y="76.5" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">8</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">right hand balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">box the gnat</tspan></text>
+<text x="68.0" y="87.0" class="beats">8</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> 1½</tspan></text>
+<text x="16.0" y="149.5" class="phrase">A2</text>
+<text x="68.0" y="118.0" class="beats">8</text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="role">Partners</tspan><tspan class="plain"> </tspan><tspan class="move">right hand balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">box the gnat</tspan></text>
+<text x="68.0" y="139.0" class="beats">2</text>
+<text x="104.0" y="139.0" class="figure" xml:space="preserve"><tspan class="role">Partners</tspan><tspan class="plain"> </tspan><tspan class="move">pull by</tspan><tspan class="plain"> right</tspan></text>
+<text x="68.0" y="160.0" class="beats">6</text>
+<text x="104.0" y="160.0" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> start a </tspan><tspan class="move">half hey</tspan><tspan class="plain"> - lefts in center, rights</tspan></text>
+<text x="68.0" y="181.0" class="beats"></text>
+<text x="120.0" y="181.0" class="figure" xml:space="preserve"><tspan class="plain">on ends</tspan></text>
+<text x="16.0" y="212.0" class="phrase">B1</text>
+<text x="68.0" y="212.0" class="beats">16</text>
+<text x="104.0" y="212.0" class="figure" xml:space="preserve"><tspan class="move">Partners balance &amp; swing</tspan></text>
+<text x="16.0" y="253.5" class="phrase">B2</text>
+<text x="68.0" y="243.0" class="beats">8</text>
+<text x="104.0" y="243.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan></text>
+<text x="68.0" y="264.0" class="beats">8</text>
+<text x="104.0" y="264.0" class="figure" xml:space="preserve"><tspan class="move">Star left</tspan><tspan class="plain"> 4 places ⁋</tspan></text>
+
+    
+  </g>
+</svg>

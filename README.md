@@ -73,6 +73,12 @@ Print a card using your custom paper size named `3x5`:
 cargo run -- print dances/in-the-mood.svg
 ```
 
+Print several cards with the same settings:
+
+```sh
+cargo run -- print dances/in-the-mood.svg dances/heartbeat-contra.svg
+```
+
 Inspect the exact `lp` command before printing:
 
 ```sh

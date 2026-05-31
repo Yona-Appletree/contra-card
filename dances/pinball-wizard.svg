@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="5in" height="3in" viewBox="0 0 500 300">
+  <title>Pinball Wizard</title>
+  <desc>Contra dance calling card generated from https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=11586</desc>
+  <metadata>
+    <contra-card xmlns="https://github.com/yona/contra-card"
+      version="0.1"
+      dance-name="Pinball Wizard"
+      authors="Andrea Nettleton"
+      formation="Hands 4 - Improper | Wave of four (NR,WL)"
+      source="the-callers-box"
+      source-id="11586"
+      source-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=11586"
+      source-json-url="https://www.ibiblio.org/contradance/thecallersbox/dance.php?id=11586&amp;format=JSON" />
+  </metadata>
+  <style>
+    .paper { fill: #fffdf5; }
+    .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
+    .top-rule { stroke: #b64545; stroke-width: 2; }
+    text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
+    .authors { font-size: 14px; }
+    .meta { font-size: 12px; text-anchor: end; }
+    .phrase { font-size: 11.2px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 8.1px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 10.6px; }
+    .meta-strong { font-weight: 700; }
+    .move { fill: #7a2e2e; font-weight: 600; }
+    .role { font-weight: 600; }
+    .amount { fill: #4d6470; font-weight: 600; }
+    .notes-label { font-size: 8.1px; font-weight: 700; }
+    .notes { font-size: 8.1px; }
+  </style>
+  <rect class="paper" x="0" y="0" width="500" height="300"/>
+  <g transform="translate(4 8)">
+    <path class="top-rule" d="M0 48 H500"/>
+    <path class="phrase-rule" d="M16.0 111.3 H484"/>
+<path class="phrase-rule" d="M16.0 169.9 H484"/>
+<path class="phrase-rule" d="M16.0 228.5 H484"/>
+
+    <rect x="16.0" y="12.0" width="43.8" height="12.0" rx="6.0" fill="#d9ca75"/>
+<text x="37.9" y="18.1" class="badge-text" style="fill: #372e14;">do-si-do</text>
+<rect x="63.8" y="12.0" width="39.8" height="12.0" rx="6.0" fill="#c2a6d6"/>
+<text x="83.7" y="18.1" class="badge-text" style="fill: #382742;">shadow</text>
+<rect x="107.6" y="12.0" width="31.2" height="12.0" rx="6.0" fill="#8cc8d8"/>
+<text x="123.2" y="18.1" class="badge-text" style="fill: #183845;">wave</text>
+
+    <text x="16" y="43.0" class="title">Pinball Wizard</text>
+    <text x="472" y="22" class="meta">Hands 4 - Improper | Wave of four (NR,WL)</text>
+    <text x="472" y="40" class="meta">By Andrea Nettleton</text>
+    <text x="16.0" y="85.6" class="phrase">A1</text>
+<text x="68.0" y="66.0" class="beats">4</text>
+<text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="move">Balance wave</tspan><tspan class="plain"> of four (NR,RL)</tspan></text>
+<text x="68.0" y="79.1" class="beats">4</text>
+<text x="104.0" y="79.1" class="figure" xml:space="preserve"><tspan class="plain">Walk forward to n2; </tspan><tspan class="move">ricochet</tspan><tspan class="plain"> with </tspan><tspan class="role">Neighbor</tspan><tspan class="plain"> n2;</tspan></text>
+<text x="68.0" y="92.2" class="beats"></text>
+<text x="120.0" y="92.2" class="figure" xml:space="preserve"><tspan class="plain">face n1</tspan></text>
+<text x="68.0" y="105.3" class="beats">8</text>
+<text x="104.0" y="105.3" class="figure" xml:space="preserve"><tspan class="plain">N1 </tspan><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="144.2" class="phrase">A2</text>
+<text x="68.0" y="124.6" class="beats">8</text>
+<text x="104.0" y="124.6" class="figure" xml:space="preserve"><tspan class="plain">In </tspan><tspan class="move">long lines</tspan><tspan class="plain">, go forward and back</tspan></text>
+<text x="68.0" y="137.7" class="beats">4</text>
+<text x="104.0" y="137.7" class="figure" xml:space="preserve"><tspan class="plain">Pass the ocean (to wave of four (N1R,RL))</tspan></text>
+<text x="68.0" y="150.8" class="beats">2</text>
+<text x="104.0" y="150.8" class="figure" xml:space="preserve"><tspan class="plain">N1 </tspan><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">allemande right</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan></text>
+<text x="68.0" y="163.9" class="beats">2</text>
+<text x="104.0" y="163.9" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> </tspan><tspan class="amount">1/2</tspan></text>
+<text x="16.0" y="202.8" class="phrase">B1</text>
+<text x="68.0" y="183.2" class="beats">4</text>
+<text x="104.0" y="183.2" class="figure" xml:space="preserve"><tspan class="move">Balance wave</tspan><tspan class="plain"> of four (PR,LL)</tspan></text>
+<text x="68.0" y="196.3" class="beats">4</text>
+<text x="104.0" y="196.3" class="figure" xml:space="preserve"><tspan class="plain">Walk forward to </tspan><tspan class="role">shadow</tspan><tspan class="plain">; </tspan><tspan class="move">ricochet</tspan><tspan class="plain"> with</tspan></text>
+<text x="68.0" y="209.4" class="beats"></text>
+<text x="120.0" y="209.4" class="figure" xml:space="preserve"><tspan class="role">shadow</tspan><tspan class="plain">; face </tspan><tspan class="role">Partner</tspan></text>
+<text x="68.0" y="222.5" class="beats">8</text>
+<text x="104.0" y="222.5" class="figure" xml:space="preserve"><tspan class="role">Partner</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="254.9" class="phrase">B2</text>
+<text x="68.0" y="241.8" class="beats">6</text>
+<text x="104.0" y="241.8" class="figure" xml:space="preserve"><tspan class="move">Circle left</tspan><tspan class="plain"> </tspan><tspan class="amount">3/4</tspan></text>
+<text x="68.0" y="254.9" class="beats">2</text>
+<text x="104.0" y="254.9" class="figure" xml:space="preserve"><tspan class="move">Pass through</tspan><tspan class="plain"> along (NR)</tspan></text>
+<text x="68.0" y="268.0" class="beats">8</text>
+<text x="104.0" y="268.0" class="figure" xml:space="preserve"><tspan class="plain">N2 </tspan><tspan class="role">Neighbor</tspan><tspan class="plain"> </tspan><tspan class="move">do-si-do</tspan><tspan class="plain"> 1 &amp; </tspan><tspan class="amount">1/4</tspan><tspan class="plain">; form wave of four</tspan></text>
+
+    
+  </g>
+</svg>

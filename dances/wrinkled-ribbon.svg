@@ -18,7 +18,8 @@
     .phrase-rule { stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }
     .top-rule { stroke: #b64545; stroke-width: 2; }
     text { fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }
-    .title { font-size: 26.0px; font-weight: 700; }
+    .title { font-size: 23.0px; font-weight: 600; }
+    .badge-text { font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
     .authors { font-size: 14px; }
     .meta { font-size: 12px; text-anchor: end; }
     .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
@@ -38,7 +39,14 @@
 <path class="phrase-rule" d="M16.0 151.0 H484"/>
 <path class="phrase-rule" d="M16.0 182.0 H484"/>
 
-    <text x="16" y="36" class="title">Wrinkled Ribbon</text>
+    <rect x="16.0" y="12.0" width="57.2" height="12.0" rx="6.0" fill="#f4c56b"/>
+<text x="44.6" y="18.1" class="badge-text" style="fill: #442600;">robins chain</text>
+<rect x="77.2" y="12.0" width="24.0" height="12.0" rx="6.0" fill="#8fd19e"/>
+<text x="89.2" y="18.1" class="badge-text" style="fill: #14351f;">hey</text>
+<rect x="105.2" y="12.0" width="52.8" height="12.0" rx="6.0" fill="#c4a4e9"/>
+<text x="131.6" y="18.1" class="badge-text" style="fill: #3b2755;">promenade</text>
+
+    <text x="16" y="43.0" class="title">Wrinkled Ribbon</text>
     <text x="472" y="22" class="meta">Hands 4 - Improper</text>
     <text x="472" y="40" class="meta">By Melanie Axel-Lute</text>
     <text x="16.0" y="76.5" class="phrase">A1</text>
@@ -48,7 +56,7 @@
 <text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan></text>
 <text x="16.0" y="128.5" class="phrase">A2</text>
 <text x="68.0" y="118.0" class="beats">16</text>
-<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> start a full </tspan><tspan class="move">hey</tspan><tspan class="plain"> - rights in center, lefts</tspan></text>
+<text x="104.0" y="118.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> start a </tspan><tspan class="move">full hey</tspan><tspan class="plain"> - rights in center, lefts</tspan></text>
 <text x="68.0" y="139.0" class="beats"></text>
 <text x="120.0" y="139.0" class="figure" xml:space="preserve"><tspan class="plain">on ends</tspan></text>
 <text x="16.0" y="170.0" class="phrase">B1</text>

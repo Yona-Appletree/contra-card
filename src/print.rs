@@ -10,7 +10,6 @@ const DEFAULT_MEDIA: &str = "3x5";
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct PrintOptions {
-    pub path: PathBuf,
     pub printer: Option<String>,
     pub media: String,
     pub copies: u32,
@@ -19,9 +18,8 @@ pub struct PrintOptions {
 }
 
 impl PrintOptions {
-    pub fn default_for_path(path: PathBuf) -> Self {
+    pub fn default_for_path(_path: PathBuf) -> Self {
         Self {
-            path,
             printer: None,
             media: DEFAULT_MEDIA.to_owned(),
             copies: 1,
@@ -29,6 +27,12 @@ impl PrintOptions {
             dry_run: false,
         }
     }
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct PrintJob {
+    pub paths: Vec<PathBuf>,
+    pub options: PrintOptions,
 }
 
 pub fn list_printers() -> Result<()> {
@@ -44,28 +48,35 @@ pub fn list_printers() -> Result<()> {
     Ok(())
 }
 
-pub fn print_svg(options: &PrintOptions) -> Result<()> {
-    if !options.path.exists() {
-        bail!("{} does not exist", options.path.display());
+pub fn print_paths(job: &PrintJob) -> Result<()> {
+    for path in &job.paths {
+        print_path(&job.options, path)?;
+    }
+    Ok(())
+}
+
+pub fn print_path_with_options(options: &PrintOptions, path: &std::path::Path) -> Result<()> {
+    print_path(options, path)
+}
+
+fn print_path(options: &PrintOptions, path: &std::path::Path) -> Result<()> {
+    if !path.exists() {
+        bail!("{} does not exist", path.display());
     }
 
-    let print_path = print_ready_path(&options.path);
-    let needs_conversion = print_path != options.path;
+    let print_path = print_ready_path(path);
+    let needs_conversion = print_path != path;
     let args = lp_args(options, &print_path);
     if options.dry_run {
         if needs_conversion {
-            println!(
-                "convert {} -> {}",
-                options.path.display(),
-                print_path.display()
-            );
+            println!("convert {} -> {}", path.display(), print_path.display());
         }
         println!("{}", display_command("lp", &args));
         return Ok(());
     }
 
     if needs_conversion {
-        convert_svg_to_pdf(&options.path, &print_path)?;
+        convert_svg_to_pdf(path, &print_path)?;
     }
 
     let status = Command::new("lp")
@@ -85,8 +96,8 @@ pub fn print_svg(options: &PrintOptions) -> Result<()> {
     Ok(())
 }
 
-pub fn parse_print_options(args: &[String]) -> Result<PrintOptions> {
-    let mut path = None;
+pub fn parse_print_job(args: &[String]) -> Result<PrintJob> {
+    let mut paths = Vec::new();
     let mut printer = None;
     let mut media = DEFAULT_MEDIA.to_owned();
     let mut copies = 1;
@@ -126,28 +137,27 @@ pub fn parse_print_options(args: &[String]) -> Result<PrintOptions> {
                 bail!("unknown print option {value:?}");
             }
             value => {
-                if path.is_some() {
-                    bail!("print accepts one SVG path");
-                }
-                path = Some(PathBuf::from(value));
+                paths.push(PathBuf::from(value));
             }
         }
         i += 1;
     }
 
-    let Some(path) = path else {
+    if paths.is_empty() {
         bail!(
-            "usage: contra-card print <svg> [--printer NAME] [--media 3x5] [--copies N] [--dry-run]"
+            "usage: contra-card print <svg> [<svg> ...] [--printer NAME] [--media 3x5] [--copies N] [--dry-run]"
         );
-    };
+    }
 
-    Ok(PrintOptions {
-        path,
-        printer,
-        media,
-        copies,
-        landscape,
-        dry_run,
+    Ok(PrintJob {
+        paths,
+        options: PrintOptions {
+            printer,
+            media,
+            copies,
+            landscape,
+            dry_run,
+        },
     })
 }
 
@@ -243,14 +253,16 @@ mod tests {
     #[test]
     fn parses_minimal_print_options() {
         assert_eq!(
-            parse_print_options(&strings(&["dances/in-the-mood.svg"])).unwrap(),
-            PrintOptions {
-                path: PathBuf::from("dances/in-the-mood.svg"),
-                printer: None,
-                media: "3x5".to_owned(),
-                copies: 1,
-                landscape: true,
-                dry_run: false,
+            parse_print_job(&strings(&["dances/in-the-mood.svg"])).unwrap(),
+            PrintJob {
+                paths: vec![PathBuf::from("dances/in-the-mood.svg")],
+                options: PrintOptions {
+                    printer: None,
+                    media: "3x5".to_owned(),
+                    copies: 1,
+                    landscape: true,
+                    dry_run: false,
+                },
             }
         );
     }
@@ -258,7 +270,7 @@ mod tests {
     #[test]
     fn parses_custom_print_options() {
         assert_eq!(
-            parse_print_options(&strings(&[
+            parse_print_job(&strings(&[
                 "card.svg",
                 "--printer",
                 "Office Printer",
@@ -270,21 +282,32 @@ mod tests {
                 "--dry-run",
             ]))
             .unwrap(),
-            PrintOptions {
-                path: PathBuf::from("card.svg"),
-                printer: Some("Office Printer".to_owned()),
-                media: "Custom.3x5in".to_owned(),
-                copies: 2,
-                landscape: false,
-                dry_run: true,
+            PrintJob {
+                paths: vec![PathBuf::from("card.svg")],
+                options: PrintOptions {
+                    printer: Some("Office Printer".to_owned()),
+                    media: "Custom.3x5in".to_owned(),
+                    copies: 2,
+                    landscape: false,
+                    dry_run: true,
+                },
             }
+        );
+    }
+
+    #[test]
+    fn parses_multiple_print_paths() {
+        assert_eq!(
+            parse_print_job(&strings(&["a.svg", "b.svg", "--dry-run"]))
+                .unwrap()
+                .paths,
+            vec![PathBuf::from("a.svg"), PathBuf::from("b.svg")]
         );
     }
 
     #[test]
     fn builds_lp_args() {
         let options = PrintOptions {
-            path: PathBuf::from("card.svg"),
             printer: Some("Office Printer".to_owned()),
             media: "3x5".to_owned(),
             copies: 2,

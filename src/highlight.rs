@@ -50,6 +50,8 @@ const AMOUNTS: &[&str] = &[
     "three quarters",
     "halfway",
     "1 1/2",
+    "1 & 1/2",
+    "1 & 1/4",
     "1/2",
     "7/8",
     "3/4",
@@ -66,6 +68,7 @@ const MOVES: &[&str] = &[
     "balance and swing",
     "balance the ring",
     "balance the wave",
+    "balance wave",
     "box the gnat",
     "box circulate",
     "right-hand chain",
@@ -73,7 +76,11 @@ const MOVES: &[&str] = &[
     "right left through",
     "square through",
     "form an ocean wave",
+    "form a wave",
+    "make an ocean wave",
+    "make a wave",
     "form a long wave",
+    "make a long wave",
     "pass through",
     "California twirl",
     "Rory O'More",
@@ -94,6 +101,10 @@ const MOVES: &[&str] = &[
     "bend the line",
     "long lines",
     "mad robin",
+    "full hey",
+    "half hey",
+    "hey",
+    "hay",
     "petronella",
     "RSR",
     "half poussette",
@@ -114,6 +125,7 @@ const MOVES: &[&str] = &[
     "long wave",
     "slice left",
     "slide left",
+    "slide right",
     "slide along set",
     "zig left zag right",
     "zig zag",
@@ -133,7 +145,6 @@ const MOVES: &[&str] = &[
     "balance",
     "swing",
     "gyre",
-    "hey",
 ];
 
 pub fn highlight(input: &str) -> Vec<Span<'_>> {
@@ -320,6 +331,58 @@ mod tests {
                 (SpanKind::Move, "dive"),
                 (SpanKind::Plain, "; "),
                 (SpanKind::Move, "zig left zag right"),
+            ]
+        );
+    }
+
+    #[test]
+    fn highlights_full_hey_as_one_move() {
+        assert_eq!(
+            kinds("Robins start a full hey; Larks start a half hey"),
+            vec![
+                (SpanKind::Role, "Robins"),
+                (SpanKind::Plain, " start a "),
+                (SpanKind::Move, "full hey"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Role, "Larks"),
+                (SpanKind::Plain, " start a "),
+                (SpanKind::Move, "half hey"),
+            ]
+        );
+    }
+
+    #[test]
+    fn highlights_slide_directions() {
+        assert_eq!(
+            kinds("Larks slide left, Robins slide right"),
+            vec![
+                (SpanKind::Role, "Larks"),
+                (SpanKind::Plain, " "),
+                (SpanKind::Move, "slide left"),
+                (SpanKind::Plain, ", "),
+                (SpanKind::Role, "Robins"),
+                (SpanKind::Plain, " "),
+                (SpanKind::Move, "slide right"),
+            ]
+        );
+    }
+
+    #[test]
+    fn highlights_form_or_make_wave() {
+        assert_eq!(
+            kinds(
+                "Balance wave; balance the wave; form a wave; make an ocean wave; make a long wave"
+            ),
+            vec![
+                (SpanKind::Move, "Balance wave"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "balance the wave"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "form a wave"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "make an ocean wave"),
+                (SpanKind::Plain, "; "),
+                (SpanKind::Move, "make a long wave"),
             ]
         );
     }

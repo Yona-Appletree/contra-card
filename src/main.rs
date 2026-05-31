@@ -12,6 +12,7 @@ use reqwest::header::{ACCEPT, ACCEPT_LANGUAGE, CACHE_CONTROL, PRAGMA};
 use serde::Deserialize;
 
 mod highlight;
+mod moves;
 mod print;
 mod wrap;
 
@@ -188,6 +189,7 @@ struct CardLayout {
     figure_font_size: f32,
     notes_font_size: f32,
     title_font_size: f32,
+    title_y: f32,
     max_figure_chars: usize,
     max_note_chars: usize,
 }
@@ -200,6 +202,19 @@ struct SvgCardInfo {
     source: Option<DanceSource>,
     source_id: Option<String>,
     source_url: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SelectedDanceOutcome {
+    Done,
+    BackToSelection,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum CreateChoice {
+    Create,
+    Skip,
+    Back,
 }
 
 fn main() -> Result<()> {
@@ -240,22 +255,10 @@ fn interactive_loop() -> Result<()> {
             continue;
         }
 
-        let dance = match dance_from_input(&input) {
-            Ok(dance) => dance,
-            Err(err) => {
-                eprintln!("Could not load dance: {err:#}\n");
-                continue;
-            }
-        };
-
-        if confirm_dance(&dance)? {
-            let path = write_svg(&dance)?;
-            after_writing_card(path)?;
-            println!();
-            continue;
+        if let Err(err) = handle_dance_input(&input) {
+            eprintln!("Could not load dance: {err:#}\n");
         }
-
-        println!("No worries. Back to search.\n");
+        println!();
     }
 }
 
@@ -265,36 +268,121 @@ fn add_command(args: &[String]) -> Result<()> {
     }
 
     let input = args.join(" ");
-    let dance = dance_from_input(&input)?;
-    if confirm_dance(&dance)? {
-        let path = write_svg(&dance)?;
-        after_writing_card(path)?;
+    handle_dance_input(&input)
+}
+
+fn handle_dance_input(input: &str) -> Result<()> {
+    if let Some(id) = contradb_id_from_input(input) {
+        let dance = fetch_contradb_dance(&id)?;
+        let _ = handle_selected_dance(&dance)?;
+        return Ok(());
     }
-    Ok(())
+    if let Some(id) = id_from_input(input) {
+        let dance = fetch_callers_box_dance(&id)?;
+        let _ = handle_selected_dance(&dance)?;
+        return Ok(());
+    }
+
+    let candidates = search_by_title(input)?;
+    if candidates.is_empty() {
+        bail!("No matches for {input:?}");
+    }
+
+    handle_search_candidates(&candidates)
+}
+
+fn handle_search_candidates(candidates: &[DanceCandidate]) -> Result<()> {
+    let shown = candidates.len().min(25);
+
+    loop {
+        print_candidates(candidates, shown);
+        let Some(candidate) = choose_candidate(candidates, shown)? else {
+            bail!("selection cancelled");
+        };
+
+        let dance = match candidate.source {
+            DanceSource::CallersBox => fetch_callers_box_dance(&candidate.id)?,
+            DanceSource::ContraDb => fetch_contradb_dance(&candidate.id)?,
+        };
+
+        match handle_selected_dance(&dance)? {
+            SelectedDanceOutcome::Done => return Ok(()),
+            SelectedDanceOutcome::BackToSelection => continue,
+        }
+    }
+}
+
+fn handle_selected_dance(dance: &CardDance) -> Result<SelectedDanceOutcome> {
+    fs::create_dir_all("dances").context("could not create dances directory")?;
+    let path = dance_svg_path(dance);
+    println!("\n{}", preview_text(dance));
+
+    if path.exists() {
+        let info = svg_card_info(&path).ok();
+        println!("Already have this card: {}", path.display());
+        if let Some(info) = &info {
+            if let Some(source) = info.source {
+                println!("Existing source: {}", source.label());
+            }
+            if let Some(source_id) = &info.source_id {
+                println!("Existing source ID: {source_id}");
+            }
+        }
+        match confirm_update_existing()? {
+            CreateChoice::Create => {}
+            CreateChoice::Skip => {
+                println!("Skipped existing card.");
+                return Ok(SelectedDanceOutcome::Done);
+            }
+            CreateChoice::Back => return Ok(SelectedDanceOutcome::BackToSelection),
+        }
+
+        write_svg_to_path(dance, &path)?;
+        println!("Updated {}", path.display());
+        if confirm_no_default("Print updated card? [y/N]: ")? {
+            let options = print::PrintOptions::default_for_path(path.clone());
+            print::print_path_with_options(&options, &path)?;
+        }
+        return Ok(SelectedDanceOutcome::Done);
+    }
+
+    match confirm_create_dance()? {
+        CreateChoice::Create => {
+            write_svg_to_path(dance, &path)?;
+            after_writing_card(path)?;
+            Ok(SelectedDanceOutcome::Done)
+        }
+        CreateChoice::Skip => {
+            println!("No worries. Back to search.");
+            Ok(SelectedDanceOutcome::Done)
+        }
+        CreateChoice::Back => Ok(SelectedDanceOutcome::BackToSelection),
+    }
 }
 
 fn handle_existing_card(path: PathBuf) -> Result<()> {
     let info = svg_card_info(&path)?;
     println!("\n{}", existing_card_summary(&path, &info));
     if confirm_yes_default("Print this card? [Y/n]: ")? {
-        let options = print::PrintOptions::default_for_path(path);
-        print::print_svg(&options)?;
+        let options = print::PrintOptions::default_for_path(path.clone());
+        print::print_path_with_options(&options, &path)?;
     }
     Ok(())
 }
 
 fn regen_command(args: &[String]) -> Result<()> {
+    if args.iter().any(|arg| arg == "--all") {
+        return regen_all_command(args);
+    }
+
     let Some(path_arg) = args.first() else {
-        bail!("usage: contra-card regen <path-to-svg> [--yes]");
+        bail!(
+            "usage: contra-card regen <path-to-svg> [--yes]\n       contra-card regen --all [--yes]"
+        );
     };
     let yes = args.iter().any(|arg| arg == "--yes" || arg == "-y");
     let path = PathBuf::from(path_arg);
-    let source_id = source_id_from_svg(&path)?;
-    let source = svg_card_info(&path)?.source;
-    let dance = match source.unwrap_or(DanceSource::CallersBox) {
-        DanceSource::CallersBox => fetch_callers_box_dance(&source_id)?,
-        DanceSource::ContraDb => fetch_contradb_dance(&source_id)?,
-    };
+    let dance = fetch_dance_from_svg_metadata(&path)?;
 
     println!("\n{}", preview_text(&dance));
     if !yes && !confirm_overwrite(&path)? {
@@ -307,16 +395,75 @@ fn regen_command(args: &[String]) -> Result<()> {
     Ok(())
 }
 
+fn regen_all_command(args: &[String]) -> Result<()> {
+    let yes = args.iter().any(|arg| arg == "--yes" || arg == "-y");
+    if !yes && !confirm_yes_default("Regenerate all SVGs in dances/? [Y/n]: ")? {
+        println!("Skipped regen --all");
+        return Ok(());
+    }
+
+    let paths = dance_svg_paths()?;
+    if paths.is_empty() {
+        println!("No SVG cards found in dances/.");
+        return Ok(());
+    }
+
+    let mut regenerated = 0;
+    let mut failures = Vec::new();
+    for path in paths {
+        print!("Regenerating {} ... ", path.display());
+        io::stdout().flush()?;
+        match regen_svg_path(&path) {
+            Ok(()) => {
+                regenerated += 1;
+                println!("ok");
+            }
+            Err(err) => {
+                println!("failed");
+                failures.push((path, err.to_string()));
+            }
+        }
+    }
+
+    println!(
+        "\nRegenerated {regenerated} card{}.",
+        if regenerated == 1 { "" } else { "s" }
+    );
+    if failures.is_empty() {
+        return Ok(());
+    }
+
+    eprintln!("{} card(s) failed:", failures.len());
+    for (path, err) in failures {
+        eprintln!("- {}: {err}", path.display());
+    }
+    bail!("regen --all completed with failures")
+}
+
+fn regen_svg_path(path: &Path) -> Result<()> {
+    let dance = fetch_dance_from_svg_metadata(path)?;
+    write_svg_to_path(&dance, path)
+}
+
+fn fetch_dance_from_svg_metadata(path: &Path) -> Result<CardDance> {
+    let source_id = source_id_from_svg(path)?;
+    let source = svg_card_info(path)?.source;
+    match source.unwrap_or(DanceSource::CallersBox) {
+        DanceSource::CallersBox => fetch_callers_box_dance(&source_id),
+        DanceSource::ContraDb => fetch_contradb_dance(&source_id),
+    }
+}
+
 fn print_command(args: &[String]) -> Result<()> {
-    let options = print::parse_print_options(args)?;
-    print::print_svg(&options)
+    let job = print::parse_print_job(args)?;
+    print::print_paths(&job)
 }
 
 fn after_writing_card(path: PathBuf) -> Result<()> {
     println!("Wrote {}", path.display());
     if confirm_yes_default("Print now? [Y/n]: ")? {
-        let options = print::PrintOptions::default_for_path(path);
-        print::print_svg(&options)?;
+        let options = print::PrintOptions::default_for_path(path.clone());
+        print::print_path_with_options(&options, &path)?;
     }
     Ok(())
 }
@@ -329,34 +476,22 @@ Usage:
   contra-card                 Interactive add flow
   contra-card add [QUERY]     Search/fetch and write dances/<dance-name>.svg
   contra-card regen <SVG>     Re-fetch using embedded SVG source metadata
+  contra-card regen --all     Re-fetch all SVGs in dances/
   contra-card printers        List configured CUPS printers
-  contra-card print <SVG>     Print an SVG card using media=3x5
+  contra-card print <SVG>...  Print one or more SVG cards using media=3x5
 
 Notes:
   QUERY can be a dance title, Caller’s Box URL, ContraDB URL, or raw Caller’s Box ID.
   The interactive prompt also accepts existing SVG paths or filenames from dances/.
   Interactive yes/no prompts default to yes, so Enter proceeds.
   Print defaults to your custom paper size named 3x5 and landscape orientation.
-  Use `contra-card print <SVG> --dry-run` to inspect the lp command.
+  Use `contra-card print <SVG> [<SVG> ...] --dry-run` to inspect the lp command.
   `cargo run --` can be used in front of these commands during development.
 "#
     );
 }
 
-fn dance_from_input(input: &str) -> Result<CardDance> {
-    if let Some(id) = contradb_id_from_input(input) {
-        return fetch_contradb_dance(&id);
-    }
-    if let Some(id) = id_from_input(input) {
-        return fetch_callers_box_dance(&id);
-    }
-
-    let candidates = search_by_title(input)?;
-    if candidates.is_empty() {
-        bail!("No matches for {input:?}");
-    }
-
-    let shown = candidates.len().min(25);
+fn print_candidates(candidates: &[DanceCandidate], shown: usize) {
     println!("\nMatches:");
     for (i, candidate) in candidates.iter().take(shown).enumerate() {
         println!(
@@ -375,11 +510,16 @@ fn dance_from_input(input: &str) -> Result<CardDance> {
         );
     }
     println!(" b. back");
+}
 
+fn choose_candidate(
+    candidates: &[DanceCandidate],
+    shown: usize,
+) -> Result<Option<&DanceCandidate>> {
     loop {
         let choice = prompt("Choose a dance: ")?;
         if choice.eq_ignore_ascii_case("b") {
-            bail!("selection cancelled");
+            return Ok(None);
         }
 
         let Ok(index) = choice.parse::<usize>() else {
@@ -391,10 +531,7 @@ fn dance_from_input(input: &str) -> Result<CardDance> {
             continue;
         };
 
-        return match candidate.source {
-            DanceSource::CallersBox => fetch_callers_box_dance(&candidate.id),
-            DanceSource::ContraDb => fetch_contradb_dance(&candidate.id),
-        };
+        return Ok(Some(candidate));
     }
 }
 
@@ -585,15 +722,26 @@ fn http_client() -> Result<Client> {
         .context("could not build HTTP client")
 }
 
-fn confirm_dance(dance: &CardDance) -> Result<bool> {
-    println!("\n{}", preview_text(dance));
-
+fn confirm_create_dance() -> Result<CreateChoice> {
     loop {
-        let answer = prompt("Create SVG for this dance? [Y/n/b]: ")?;
+        let answer = prompt("Create SVG for this dance? [Y/n/b/s]: ")?;
         match answer.to_lowercase().as_str() {
-            "" | "y" | "yes" => return Ok(true),
-            "n" | "no" | "b" | "back" => return Ok(false),
-            _ => eprintln!("Enter y or b."),
+            "" | "y" | "yes" => return Ok(CreateChoice::Create),
+            "n" | "no" | "s" | "search" => return Ok(CreateChoice::Skip),
+            "b" | "back" => return Ok(CreateChoice::Back),
+            _ => eprintln!("Enter y, n, b, or s."),
+        }
+    }
+}
+
+fn confirm_update_existing() -> Result<CreateChoice> {
+    loop {
+        let answer = prompt("Update existing SVG? [y/N/b/s]: ")?;
+        match answer.to_lowercase().as_str() {
+            "y" | "yes" => return Ok(CreateChoice::Create),
+            "" | "n" | "no" | "s" | "search" => return Ok(CreateChoice::Skip),
+            "b" | "back" => return Ok(CreateChoice::Back),
+            _ => eprintln!("Enter y, n, b, or s."),
         }
     }
 }
@@ -627,14 +775,9 @@ fn preview_text(dance: &CardDance) -> String {
     out
 }
 
-fn write_svg(dance: &CardDance) -> Result<PathBuf> {
-    fs::create_dir_all("dances").context("could not create dances directory")?;
-
+fn dance_svg_path(dance: &CardDance) -> PathBuf {
     let filename = format!("{}.svg", slugify(&dance.title));
-    let path = PathBuf::from("dances").join(filename);
-    write_svg_to_path(dance, &path)?;
-
-    Ok(path)
+    PathBuf::from("dances").join(filename)
 }
 
 fn write_svg_to_path(dance: &CardDance, path: &Path) -> Result<()> {
@@ -662,6 +805,7 @@ fn render_svg(dance: &CardDance) -> String {
     let metadata_authors = encode_double_quoted_attribute(&metadata_authors_text);
     let metadata_formation = encode_double_quoted_attribute(&meta_text);
     let layout = card_layout(dance);
+    let move_badges = render_move_badges(dance);
 
     let mut rows = String::new();
     let mut phrase_rules = String::new();
@@ -762,7 +906,8 @@ fn render_svg(dance: &CardDance) -> String {
     .phrase-rule {{ stroke: #7aa0b8; stroke-width: 1.2; opacity: 0.8; }}
     .top-rule {{ stroke: #b64545; stroke-width: 2; }}
     text {{ fill: #1d2528; font-family: "Avenir Next", Arial, sans-serif; }}
-    .title {{ font-size: {title_font_size:.1}px; font-weight: 700; }}
+    .title {{ font-size: {title_font_size:.1}px; font-weight: 600; }}
+    .badge-text {{ font-size: 8.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }}
     .authors {{ font-size: 14px; }}
     .meta {{ font-size: 12px; text-anchor: end; }}
     .phrase {{ font-size: {phrase_font_size:.1}px; font-weight: 700; dominant-baseline: middle; }}
@@ -779,7 +924,8 @@ fn render_svg(dance: &CardDance) -> String {
   <g transform="translate(4 8)">
     <path class="top-rule" d="M0 48 H500"/>
     {phrase_rules}
-    <text x="16" y="36" class="title">{title}</text>
+    {move_badges}
+    <text x="16" y="{title_y:.1}" class="title">{title}</text>
     <text x="472" y="22" class="meta">{meta}</text>
     <text x="472" y="40" class="meta">{authors}</text>
     {rows}
@@ -792,7 +938,41 @@ fn render_svg(dance: &CardDance) -> String {
         figure_font_size = layout.figure_font_size,
         notes_font_size = layout.notes_font_size,
         title_font_size = layout.title_font_size,
+        title_y = layout.title_y,
     )
+}
+
+fn render_move_badges(dance: &CardDance) -> String {
+    let figure_texts = dance
+        .phrases
+        .iter()
+        .flat_map(|phrase| phrase.figures.iter())
+        .map(|figure| normalize_card_text(&figure.text))
+        .collect::<Vec<_>>();
+    let tags = moves::tags_for_texts(figure_texts.iter().map(String::as_str));
+
+    let mut out = String::new();
+    let mut x = 16.0;
+    for tag in tags {
+        let width = badge_width(tag.label);
+        let y = 12.0;
+        let text_y = y + 6.1;
+        let label = encode_text(tag.label);
+        out.push_str(&format!(
+            r##"<rect x="{x:.1}" y="{y:.1}" width="{width:.1}" height="12.0" rx="6.0" fill="{bg}"/>
+<text x="{text_x:.1}" y="{text_y:.1}" class="badge-text" style="fill: {fg};">{label}</text>
+"##,
+            bg = tag.bg,
+            fg = tag.fg,
+            text_x = x + width / 2.0,
+        ));
+        x += width + 4.0;
+    }
+    out
+}
+
+fn badge_width(label: &str) -> f32 {
+    (text_width(label, 8.0, 0.54) + 11.0).max(23.0)
 }
 
 fn render_figure_spans(text: &str) -> String {
@@ -875,6 +1055,7 @@ fn card_layout(dance: &CardDance) -> CardLayout {
         figure_font_size: base_figure_font_size * scale,
         notes_font_size: 13.0 * scale,
         title_font_size: title_font_size(&dance.title),
+        title_y: 43.0,
         max_figure_chars,
         max_note_chars,
     }
@@ -882,8 +1063,8 @@ fn card_layout(dance: &CardDance) -> CardLayout {
 
 fn title_font_size(title: &str) -> f32 {
     let max_width = 330.0;
-    let base_size = 26.0;
-    let min_size = 17.0;
+    let base_size = 23.0;
+    let min_size = 16.0;
     let estimated_width = text_width(title, base_size, 0.56);
     if estimated_width <= max_width {
         base_size
@@ -992,6 +1173,10 @@ fn neutralize_terms(text: &str) -> String {
         (r"\bwomen\b", "Robins"),
         (r"\bwoman\b", "Robin"),
         (r"\bgyre\b", "RSR"),
+        (r"\bhay\b", "hey"),
+        (r"\bshift left\b", "slide left"),
+        (r"\bshift right\b", "slide right"),
+        (r"\b1/2 hey\b", "half hey"),
     ];
 
     let mut out = text.to_owned();
@@ -1136,6 +1321,20 @@ fn source_id_from_svg(path: &Path) -> Result<String> {
     })
 }
 
+fn dance_svg_paths() -> Result<Vec<PathBuf>> {
+    let mut paths = Vec::new();
+    let entries = fs::read_dir("dances").context("could not read dances directory")?;
+    for entry in entries {
+        let entry = entry.context("could not read dances directory entry")?;
+        let path = entry.path();
+        if path.is_file() && path.extension().is_some_and(|ext| ext == "svg") {
+            paths.push(path);
+        }
+    }
+    paths.sort();
+    Ok(paths)
+}
+
 fn resolve_existing_svg(input: &str) -> Option<PathBuf> {
     let cleaned = input.trim().trim_matches('"').trim_matches('\'');
     if cleaned.is_empty() {
@@ -1228,6 +1427,17 @@ fn confirm_yes_default(label: &str) -> Result<bool> {
     }
 }
 
+fn confirm_no_default(label: &str) -> Result<bool> {
+    loop {
+        let answer = prompt(label)?;
+        match answer.to_lowercase().as_str() {
+            "y" | "yes" => return Ok(true),
+            "" | "n" | "no" => return Ok(false),
+            _ => eprintln!("Enter y or n."),
+        }
+    }
+}
+
 fn prompt(label: &str) -> Result<String> {
     print!("{label}");
     io::stdout().flush().context("could not flush stdout")?;
@@ -1265,8 +1475,10 @@ mod tests {
     #[test]
     fn neutralizes_role_terms() {
         assert_eq!(
-            neutralize_terms("Men pass left; ladies chain; gentlespoons and ladles"),
-            "Larks pass left; Robins chain; Larks and Robins"
+            neutralize_terms(
+                "Men pass left; ladies chain; gentlespoons and ladles; new neighbor ladle"
+            ),
+            "Larks pass left; Robins chain; Larks and Robins; new neighbor Robin"
         );
     }
 
@@ -1297,6 +1509,26 @@ mod tests {
             normalize_card_text("balance &  petronella"),
             "Balance & petronella"
         );
+        assert_eq!(
+            normalize_card_text("ladles start a hay"),
+            "Robins start a hey"
+        );
+        assert_eq!(
+            normalize_card_text("ladles allemande right ¾ to new neighbor ladle ⁋"),
+            "Robins allemande right ¾ to new Neighbor Robin ⁋"
+        );
+        assert_eq!(
+            normalize_card_text("gentlespoons shift left"),
+            "Larks slide left"
+        );
+        assert_eq!(
+            normalize_card_text("gentlespoons shift right"),
+            "Larks slide right"
+        );
+        assert_eq!(
+            normalize_card_text("ladles start a 1/2 hey"),
+            "Robins start a half hey"
+        );
         assert_eq!(normalize_card_text("neighbors swing"), "Neighbors swing");
         assert_eq!(
             normalize_card_text("partners California twirl ⁋"),
@@ -1316,7 +1548,7 @@ mod tests {
 
     #[test]
     fn scales_long_titles() {
-        assert_eq!(title_font_size("In the Mood"), 26.0);
+        assert_eq!(title_font_size("In the Mood"), 23.0);
         assert!(title_font_size("Maliza's Magical Mystery Motion") < 22.0);
     }
 
