@@ -22,22 +22,22 @@
     .badge-text { font-size: 9.0px; font-weight: 700; dominant-baseline: middle; text-anchor: middle; }
     .authors { font-size: 14px; }
     .meta { font-size: 12px; text-anchor: end; }
-    .phrase { font-size: 17.3px; font-weight: 700; dominant-baseline: middle; }
-    .beats { font-size: 12.5px; font-weight: 700; text-anchor: end; }
-    .figure { font-size: 16.4px; }
+    .phrase { font-size: 18.0px; font-weight: 700; dominant-baseline: middle; }
+    .beats { font-size: 13.0px; font-weight: 700; text-anchor: end; }
+    .figure { font-size: 17.0px; }
     .meta-strong { font-weight: 700; }
     .move { fill: #7a2e2e; font-weight: 600; }
     .role { font-weight: 600; }
     .amount { fill: #4d6470; font-weight: 600; }
-    .notes-label { font-size: 12.5px; font-weight: 700; }
-    .notes { font-size: 12.5px; }
+    .notes-label { font-size: 13.0px; font-weight: 700; }
+    .notes { font-size: 13.0px; }
   </style>
   <rect class="paper" x="0" y="0" width="500" height="300"/>
   <g transform="translate(4 8)">
     <path class="top-rule" d="M0 48 H500"/>
-    <path class="phrase-rule" d="M16.0 95.0 H484"/>
-<path class="phrase-rule" d="M16.0 142.2 H484"/>
-<path class="phrase-rule" d="M16.0 189.3 H484"/>
+    <path class="phrase-rule" d="M16.0 96.5 H484"/>
+<path class="phrase-rule" d="M16.0 145.5 H484"/>
+<path class="phrase-rule" d="M16.0 194.5 H484"/>
 
     <rect x="16.0" y="12.0" width="64.0" height="14.0" rx="7.0" fill="#f4c56b"/>
 <text x="48.0" y="19.1" class="badge-text" style="fill: #442600;">robins chain</text>
@@ -49,25 +49,25 @@
     <text x="16" y="43.0" class="title">Maliza's Magical Mystery Motion</text>
     <text x="472" y="22" class="meta">Hands 4 - <tspan class="meta-strong">Becket</tspan> | CCW</text>
     <text x="472" y="40" class="meta">By Cary Ravitz</text>
-    <text x="16.0" y="76.1" class="phrase">A1</text>
+    <text x="16.0" y="76.5" class="phrase">A1</text>
 <text x="68.0" y="66.0" class="beats">8</text>
 <text x="104.0" y="66.0" class="figure" xml:space="preserve"><tspan class="role">Larks</tspan><tspan class="plain"> </tspan><tspan class="move">allemande left</tspan><tspan class="plain"> 1½</tspan></text>
-<text x="68.0" y="86.2" class="beats">8</text>
-<text x="104.0" y="86.2" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
-<text x="16.0" y="123.2" class="phrase">A2</text>
-<text x="68.0" y="113.1" class="beats">8</text>
-<text x="104.0" y="113.1" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">promenade</tspan></text>
-<text x="68.0" y="133.3" class="beats">8</text>
-<text x="104.0" y="133.3" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan></text>
-<text x="16.0" y="170.4" class="phrase">B1</text>
-<text x="68.0" y="160.3" class="beats">8</text>
-<text x="104.0" y="160.3" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">petronella</tspan><tspan class="plain"> and turn to face the next ⁋</tspan></text>
-<text x="68.0" y="180.5" class="beats">8</text>
-<text x="104.0" y="180.5" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">petronella</tspan></text>
-<text x="16.0" y="207.4" class="phrase">B2</text>
-<text x="68.0" y="207.4" class="beats">16</text>
-<text x="104.0" y="207.4" class="figure" xml:space="preserve"><tspan class="move">Partners balance &amp; swing</tspan></text>
+<text x="68.0" y="87.0" class="beats">8</text>
+<text x="104.0" y="87.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">swing</tspan></text>
+<text x="16.0" y="125.5" class="phrase">A2</text>
+<text x="68.0" y="115.0" class="beats">8</text>
+<text x="104.0" y="115.0" class="figure" xml:space="preserve"><tspan class="role">Neighbors</tspan><tspan class="plain"> </tspan><tspan class="move">promenade</tspan></text>
+<text x="68.0" y="136.0" class="beats">8</text>
+<text x="104.0" y="136.0" class="figure" xml:space="preserve"><tspan class="role">Robins</tspan><tspan class="plain"> </tspan><tspan class="move">chain</tspan></text>
+<text x="16.0" y="174.5" class="phrase">B1</text>
+<text x="68.0" y="164.0" class="beats">8</text>
+<text x="104.0" y="164.0" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">petronella</tspan><tspan class="plain"> and turn to face the next ⁋</tspan></text>
+<text x="68.0" y="185.0" class="beats">8</text>
+<text x="104.0" y="185.0" class="figure" xml:space="preserve"><tspan class="move">Balance</tspan><tspan class="plain"> &amp; </tspan><tspan class="move">petronella</tspan></text>
+<text x="16.0" y="213.0" class="phrase">B2</text>
+<text x="68.0" y="213.0" class="beats">16</text>
+<text x="104.0" y="213.0" class="figure" xml:space="preserve"><tspan class="move">Partners balance &amp; swing</tspan></text>
 
-    <text x="24.0" y="227.6" class="notes"><tspan class="notes-label">Notes:</tspan><tspan> "The motion in b1 does seem magical – while the Robins petronella over and</tspan></text><text x="36.0" y="247.8" class="notes">back across the set, the Larks do consecutive petronellas along the side, in</text><text x="36.0" y="268.0" class="notes">effect progressing behind his Partner’s back." - rich goss</text>
+    <text x="24.0" y="234.0" class="notes"><tspan class="notes-label">Notes:</tspan><tspan> "The motion in b1 does seem magical – while the Robins petronella over and</tspan></text><text x="36.0" y="250.0" class="notes">back across the set, the Larks do consecutive petronellas along the side, in</text><text x="36.0" y="266.0" class="notes">effect progressing behind his Partner’s back." - rich goss</text>
   </g>
 </svg>

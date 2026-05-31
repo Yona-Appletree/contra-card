@@ -183,6 +183,7 @@ struct CardLayout {
     continuation_x: f32,
     body_start: f32,
     row_step: f32,
+    note_row_step: f32,
     phrase_gap: f32,
     phrase_font_size: f32,
     beats_font_size: f32,
@@ -880,7 +881,7 @@ fn render_svg(dance: &CardDance) -> String {
                     ));
                 }
                 first_note_line = false;
-                y += layout.row_step;
+                y += layout.note_row_step;
             }
         }
     }
@@ -1025,12 +1026,14 @@ fn card_layout(dance: &CardDance) -> CardLayout {
     let body_start = 66.0;
     let body_max_baseline = 268.0;
     let default_row_step = 21.0;
+    let default_note_row_step = 16.0;
     let default_phrase_gap = 7.0;
-    let content_rows = figure_rows + note_rows;
     let default_height = content_height(
-        content_rows,
+        figure_rows,
+        note_rows,
         phrase_gaps,
         default_row_step,
+        default_note_row_step,
         default_phrase_gap,
     );
     let available_height = body_max_baseline - body_start;
@@ -1049,6 +1052,7 @@ fn card_layout(dance: &CardDance) -> CardLayout {
         continuation_x: figure_x + 16.0,
         body_start,
         row_step: default_row_step * scale,
+        note_row_step: default_note_row_step * scale,
         phrase_gap: default_phrase_gap * scale,
         phrase_font_size: 18.0 * scale,
         beats_font_size: 13.0 * scale,
@@ -1115,12 +1119,23 @@ fn text_width(text: &str, font_size: f32, average_em: f32) -> f32 {
         * font_size
 }
 
-fn content_height(content_rows: usize, phrase_gaps: usize, row_step: f32, phrase_gap: f32) -> f32 {
-    if content_rows == 0 {
+fn content_height(
+    figure_rows: usize,
+    note_rows: usize,
+    phrase_gaps: usize,
+    row_step: f32,
+    note_row_step: f32,
+    phrase_gap: f32,
+) -> f32 {
+    let figure_height = figure_rows.saturating_sub(1) as f32 * row_step;
+    let note_height = if note_rows == 0 {
         0.0
+    } else if figure_rows == 0 {
+        note_rows.saturating_sub(1) as f32 * note_row_step
     } else {
-        (content_rows - 1) as f32 * row_step + phrase_gaps as f32 * phrase_gap
-    }
+        row_step + note_rows.saturating_sub(1) as f32 * note_row_step
+    };
+    figure_height + note_height + phrase_gaps as f32 * phrase_gap
 }
 
 fn dance_meta(dance: &CardDance) -> String {
