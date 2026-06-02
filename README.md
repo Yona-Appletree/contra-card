@@ -3,6 +3,14 @@
 A tiny Rust CLI for making editable 3x5 SVG calling cards from dances in
 The Caller's Box and ContraDB.
 
+## Acknowledgments
+
+Contra Card is possible because of the public dance collections maintained by
+[The Caller's Box](https://www.ibiblio.org/contradance/thecallersbox/) and
+[ContraDB](https://contradb.com/). Many thanks to their maintainers and
+contributors for preserving, organizing, and sharing contra dance repertoire
+with the community.
+
 ## Use
 
 ```sh
